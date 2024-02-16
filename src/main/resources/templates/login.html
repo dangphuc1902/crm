@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Bootstrap Example</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+<body>
+
+<div class="container">
+  <div class="row mt-5">
+    <div class="col-md-5 m-auto mt-5">
+      <h3 class="text-center">ĐĂNG NHẬP HỆ THỐNG</h3>
+<!--        ${ten_bien:} Xuat ra gia tri cua bien -->
+<!--        Nếu như giá trị của biến isSuccess là false thì +sẽ hiển thị thẻ h5 ngược lại thì không hiển thị -->
+<!--         Hiển thị thông báo lỗi nếu có-->
+                <div th:if="${error}">
+                    <p style="color: red" th:text="${error}"></p>
+                </div>
+<!--        <h5 style="color: red;text-align: center" th:if="${isSuccess == false}" > Đăng nhập thất bại!</h5>-->
+      <div class="p-4 border mt-4">
+          <!--       action:   đường dẫn sẽ được gọi khi click vào nút submit button  -->
+          <!--            method: Cách thức gọi đường dẫn khai báoở action -->
+          <!--            name: tên tham số, giá trị người dùng nhập (hoặc chọn) sẽ là giá trị của tham số. -->
+<!--          th:action ="@{/login}" : @ thay thế host link động.-->
+        <form th:action ="@{/login}" method="post">
+            <div class="form-group">
+              <label>Email</label>
+              <input th:value="${email}" type="email" placeholder="email" class="form-control" name="email">
+            </div>
+            <div class="form-group">
+              <label>Mật khẩu</label>
+              <input th:value="${password}" type="password" placeholder="password" class="form-control" name="password">
+            </div>
+            <div>
+                <input type="checkbox" name="remember"/> Lưu tài khoản <br/>
+            </div> 
+            <button type="submit" class="btn btn-primary">Đăng nhập</button>
+          </form>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</body>
+</html>
