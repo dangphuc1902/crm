@@ -100,7 +100,7 @@ public class LoginController {
         // Dashboard page
         System.out.println("Kiem tra: " + email + "    _       " + password);
         List<UsersEntity> listUser = userRespository.findByEmailAndPassword(email, password);
-        RolesEntity role;
+        RolesEntity role ;
         String roleName = "";
         for (UsersEntity roleId : listUser){
             role = roleId.getRolesEntity();
@@ -130,6 +130,9 @@ public class LoginController {
             httpSession.setMaxInactiveInterval(8*60*60);
 
             httpSession.setAttribute("role",roleName);
+            httpSession.setMaxInactiveInterval(8*60*60);
+
+            httpSession.setAttribute("user_id",roleName);
             httpSession.setMaxInactiveInterval(8*60*60);
             isSuccess = true;
             return "redirect:/dashboard";

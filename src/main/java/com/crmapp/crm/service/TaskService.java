@@ -62,13 +62,18 @@ public class TaskService {
         return isSuccess;
     }
 
-    public TasksEntity getTaskById(int job_id) {
-        Optional<TasksEntity> tasksEntity = taskReponsitory.findById(job_id);
+    public TasksEntity getTaskById(int task_id) {
+        Optional<TasksEntity> tasksEntity = taskReponsitory.findById(task_id);
         TasksEntity datatask = null;
         if (tasksEntity.isPresent()) {
             datatask = tasksEntity.get();
         }
         return datatask;
+    }
+
+    public List<TasksEntity> findByUsersEntity(UsersEntity usersEntity) {
+        List<TasksEntity> tasksEntities = taskReponsitory.findByUsersEntity(usersEntity);
+        return tasksEntities;
     }
 
     public boolean processAddTask(String nameTask, JobsEntity jobsEntity, UsersEntity usersEntity, Date startDate, Date endDate, StatusEntity statusEntity) {

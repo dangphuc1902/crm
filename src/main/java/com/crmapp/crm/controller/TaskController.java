@@ -91,7 +91,6 @@ public class TaskController {
                                  @RequestParam("job_id") int job_id,
                                  @RequestParam("user_id") int user_id,
                                  @RequestParam("status_id") int status_id,
-
                                  @RequestParam(name = "startDate")@DateTimeFormat(pattern = "dd-MM-yyyy")  Date startDate,
                                  @RequestParam(name = "endDate")@DateTimeFormat(pattern = "dd-MM-yyyy")  Date endDate,
                                  Model model){
