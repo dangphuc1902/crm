@@ -49,26 +49,28 @@ public class TaskController {
 
     @PostMapping("/add")
     public String processAddTask(@RequestParam String nameTask,
-                                @RequestParam("job_id") int job_id,
-                                @RequestParam("user_id") int user_id,
+                                 @RequestParam(name = "description") String description,
+                                 @RequestParam("job_id") int job_id,
+                                 @RequestParam("user_id") int user_id,
                                  @RequestParam("status_id") int status_id,
                                  @RequestParam(name = "startDate")@DateTimeFormat(pattern = "dd-MM-yyyy")  Date startDate,
                                  @RequestParam(name = "endDate")@DateTimeFormat(pattern = "dd-MM-yyyy")  Date endDate,
-            Model model){
+                                 Model model){
         List<JobsEntity> listJobs = jobsService.getAlljob();
         model.addAttribute("listJobs",listJobs);
         List<UsersEntity> listUser = userService.getAllUser();
         model.addAttribute("listUser",listUser);
         List<StatusEntity> statusList = statusService.getAllStatus();
         model.addAttribute("nameTask", nameTask);
+        model.addAttribute("description",description);
         JobsEntity jobs = jobsService.getJobById(job_id);
         UsersEntity users = userService.getUserId(user_id);
         StatusEntity status = statusService.getStatusById(status_id);
-        boolean checkConditions = taskService.checkConditions(nameTask,users,jobs);
+        boolean checkConditions = taskService.checkConditions(nameTask,description,users,jobs);
         model.addAttribute("checkConditions",checkConditions);
         boolean checkConditionsDate = taskService.checkConditionsDate(jobs,startDate,endDate);
         model.addAttribute("checkConditionsDate",checkConditionsDate);
-        boolean isProcessAddSucces = taskService.processAddTask(nameTask,jobs,users,startDate,endDate,status);
+        boolean isProcessAddSucces = taskService.processAddTask(nameTask,description,jobs,users,startDate,endDate,status);
         model.addAttribute("isProcessAddSucces",isProcessAddSucces);
         return "task-add";
     }
@@ -87,21 +89,22 @@ public class TaskController {
     }
     @PostMapping("/update/{task_id}")
     public String processUpdateTask(@RequestParam String nameTask,
-                                 @PathVariable(name = "task_id") int id,
-                                 @RequestParam("job_id") int job_id,
-                                 @RequestParam("user_id") int user_id,
-                                 @RequestParam("status_id") int status_id,
-                                 @RequestParam(name = "startDate")@DateTimeFormat(pattern = "dd-MM-yyyy")  Date startDate,
-                                 @RequestParam(name = "endDate")@DateTimeFormat(pattern = "dd-MM-yyyy")  Date endDate,
-                                 Model model){
+                                    @RequestParam(name = "description") String description,
+                                    @PathVariable(name = "task_id") int id,
+                                    @RequestParam("job_id") int job_id,
+                                    @RequestParam("user_id") int user_id,
+                                    @RequestParam("status_id") int status_id,
+                                    @RequestParam(name = "startDate")@DateTimeFormat(pattern = "dd-MM-yyyy")  Date startDate,
+                                    @RequestParam(name = "endDate")@DateTimeFormat(pattern = "dd-MM-yyyy")  Date endDate,
+                                    Model model){
         JobsEntity jobs = jobsService.getJobById(job_id);
         UsersEntity users = userService.getUserId(user_id);
         StatusEntity status = statusService.getStatusById(status_id);
-        boolean checkConditions = taskService.checkConditions(nameTask,users,jobs);
+        boolean checkConditions = taskService.checkConditions(nameTask,description,users,jobs);
         model.addAttribute("checkConditions",checkConditions);
         boolean checkConditionsDate = taskService.checkConditionsDate(jobs,startDate,endDate);
         model.addAttribute("checkConditionsDate",checkConditionsDate);
-        boolean isProcessAddSucces = taskService.processUpdateTask(id,nameTask,jobs,users,startDate,endDate,status);
+        boolean isProcessAddSucces = taskService.processUpdateTask(id,nameTask,description,jobs,users,startDate,endDate,status);
         model.addAttribute("isProcessAddSucces",isProcessAddSucces);
         return "redirect:/task/table";
     }

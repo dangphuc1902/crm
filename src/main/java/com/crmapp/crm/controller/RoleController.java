@@ -56,9 +56,9 @@ public class RoleController {
     }
     @PostMapping("/add")
     public String processAdd(@RequestParam String roleName,
-                             @RequestParam String desc,Model model
+                             @RequestParam String description,Model model
                              ){
-        roleService.insertRole(roleName,desc,model);
+        roleService.insertRole(roleName,description,model);
 
         return "role-add.html";
     }
@@ -78,11 +78,11 @@ public class RoleController {
     }
     @PostMapping("/update/{roleId}")
     public String processUpdate(@PathVariable(name = "roleId") int id, @RequestParam String roleName,
-                                @RequestParam String desc,Model model){
+                                @RequestParam String description,Model model){
         RolesEntity rolesEntity = new RolesEntity();
         rolesEntity.setId(id);          // set id chức năng update.
         rolesEntity.setName(roleName);
-        rolesEntity.setDescription(desc);
+        rolesEntity.setDescription(description);
         roleService.updateRole(rolesEntity);
         model.addAttribute("rolesEntity", rolesEntity);     // trả đối tượng ra giao diện luôn.
         return "redirect:/role/table";

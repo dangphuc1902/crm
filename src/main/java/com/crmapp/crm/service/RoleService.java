@@ -19,15 +19,15 @@ public class RoleService {
         return rolesRepository.findAll();
     }
 
-public void insertRole(String roleName, String desc,Model model){
+public void insertRole(String roleName, String description,Model model){
 
     boolean isSuccess = false;
     RolesEntity rolesEntity = new RolesEntity();
     rolesEntity.setName(roleName);
-    rolesEntity.setDescription(desc);
+    rolesEntity.setDescription(description);
 
 
-    if (roleName.equals("") || desc == "") {
+    if (roleName.equals("") || description == "") {
         isSuccess = false;
         model.addAttribute("isSuccess",isSuccess);
 

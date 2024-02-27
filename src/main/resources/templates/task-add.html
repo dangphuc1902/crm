@@ -71,7 +71,7 @@
                             </a>
                             <ul class="dropdown-menu">
                                 <li><a th:href="@{/profile/table}">Thông tin cá nhân</a></li>
-                                <li><a href="#">Thống kê công việc</a></li>
+                                <li><a th:href="@{/user/userdetails}">Thống kê công việc</a></li>
                                 <li class="divider"></li>
                                 <li><a th:href="@{/login}">Đăng xuất</a></li>
                             </ul>
@@ -150,27 +150,32 @@
                                     </div>
                                 </div>
                                 <div class="form-group">
+                                    <label class="col-md-12">Miêu tả công việc</label>
+                                    <div class="col-md-12">
+                                        <input type="text" placeholder="Miêu tả công việc"
+                                               class="form-control form-control-line" name="description" th:value="${description}">
+                                    </div>
+                                </div>
+                                <div class="form-group">
                                     <label class="col-md-12">Người thực hiện</label>
                                     <div class="col-md-12">
                                         <select class="form-control form-control-line" name="user_id">
                                             <option th:each="item : ${listUser}" th:value="${item.id}" th:text="${item.fullname}"></option>
                                         </select>
-                                        <h3 style="color: red;text-align: center" th:if="${checkConditions == false}" >Đã có thành viên đảm nhận công việc này, kiểm tra lại !</h3>                                    </div>
+                                    </div>
                                 </div>
                                 <div class="form-group">
                                     <label class="col-md-12">Ngày bắt đầu</label>
                                     <div class="col-md-12">
-                                        <input type="text" placeholder="dd/MM/yyyy"
+                                        <input type="text" placeholder="dd-MM-yyyy"
                                             class="form-control form-control-line" name="startDate" >
-                                        <h3 style="color: red;text-align: center" th:if="${checkConditionsDate == false}" >Thời gian này đã nằm ngoài thời gian cho phép làm Dự án !</h3>
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <label class="col-md-12">Ngày kết thúc</label>
                                     <div class="col-md-12">
-                                        <input type="text" placeholder="dd/MM/yyyy"
+                                        <input type="text" placeholder="dd-MM-yyyy"
                                             class="form-control form-control-line" name="endDate" >
-                                        <h3 style="color: red;text-align: center" th:if="${isProcessAddSucces == false}" >Thêm công việc thất bại !</h3>
                                     </div>
                                 </div>
                                 <div class="form-group">
@@ -186,6 +191,8 @@
                                         <button type="submit" class="btn btn-success">Lưu lại</button>
                                         <a th:href="@{/task/table}" class="btn btn-primary">Quay lại</a>
                                     </div>
+                                    <h3 style="color: red;text-align: center" th:if="${checkConditionsDate == false}" >Thời gian này đã nằm ngoài thời gian cho phép làm Dự án !</h3>
+                                    <h3 style="color: red;text-align: center" th:if="${checkConditions == false}" >Đã có thành viên đảm nhận công việc này, kiểm tra lại !</h3>
                                     <h3 style="color: blue;text-align: center" th:if="${isProcessAddSucces == true}" >Thêm công việc thành công !</h3>
                                     <h3 style="color: red;text-align: center" th:if="${isProcessAddSucces == false}" >Thêm công việc thất bại !</h3>
                                 </div>

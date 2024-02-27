@@ -7,12 +7,12 @@ import java.util.Arrays;
 @Service
 public class NameParserService {
     // File cut frist name and lastname
-    public String[] parseFullName(String fullName) {
-        return fullName.split("\\s+");
+    public String[] parseFullName(String fullname) {
+        return fullname.split("\\s+");
     }
 
-    public String[] getFirstNameAndLastName(String fullName) {
-        String[] names = parseFullName(fullName);
+    public String[] getFirstNameAndLastName(String fullname) {
+        String[] names = parseFullName(fullname);
 
         if (names.length == 1) {
             return new String[]{names[0], ""}; // Chỉ có một từ, giả sử đó là firstname

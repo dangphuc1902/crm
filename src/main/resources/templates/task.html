@@ -72,7 +72,7 @@
                                 </a>
                                 <ul class="dropdown-menu">
                                     <li><a th:href="@{/profile/table}">Thông tin cá nhân</a></li>
-                                    <li><a href="#">Thống kê công việc</a></li>
+                                    <li><a th:href="@{/user/userdetails}">Thống kê công việc</a></li>
                                     <li class="divider"></li>
                                     <li><a th:href="@{/login}">Đăng xuất</a></li>
                                 </ul>
@@ -162,7 +162,6 @@
                                             <td>
                                                 <a th:href="@{/task/update/{task_id}(task_id = ${item.id})}" class="btn btn-sm btn-primary">Sửa</a>
                                                 <a th:href="@{/task/delete/{task_id}(task_id = ${item.id})}" class="btn btn-sm btn-danger">Xóa</a>
-                                                <a th:href="@{/task/details/{task_id}(task_id = ${item.id})}" class="btn btn-sm btn-info" >Xem</a>
                                             </td>
                                         </tr>
                                     </tbody>

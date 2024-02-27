@@ -10,7 +10,9 @@ import com.fasterxml.jackson.databind.annotation.JsonAppend;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
 
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -21,7 +23,14 @@ public class ProfileService {
     private TaskReponsitory taskReponsitory;
     @Autowired
     private StatusService statusService;
-
+    public void jobNumber(Model model){
+        double doNotTask = calculatePercentage(1);
+        model.addAttribute("doNotTask",doNotTask);
+        double doingTask = calculatePercentage(2);
+        model.addAttribute("doingTask",doingTask);
+        double doneTask = calculatePercentage(3);
+        model.addAttribute("doneTask",doneTask);
+    }
     public double calculatePercentage(int statusId) {
         // Tính toán phần trăm công việc dựa trên trạng thái
         int totalTasks = taskReponsitory.findAll().size();
@@ -45,4 +54,5 @@ public class ProfileService {
         }
         return usersEntity;
     }
+
 }

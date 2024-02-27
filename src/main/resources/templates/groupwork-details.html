@@ -80,7 +80,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                         </a>
                         <ul class="dropdown-menu">
                             <li><a href="profile.html">Thông tin cá nhân</a></li>
-                            <li><a href="#">Thống kê công việc</a></li>
+                            <li><a th:href="@{/user/userdetails}">Thống kê công việc</a></li>
                             <li class="divider"></li>
                             <li><a th:href="@{/login}">Đăng xuất</a></li>
                         </ul>
@@ -219,7 +219,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 <div class="col-xs-12">
                     <a href="#" class="group-title">
                         <img width="30" src="plugins/images/users/pawandeep.jpg" class="img-circle"/>
-                        <span th:text="${user.fullName}"></span>
+                        <span th:text="${user.fullname}"></span>
                     </a>
                 </div>
                 <div class="col-md-4">

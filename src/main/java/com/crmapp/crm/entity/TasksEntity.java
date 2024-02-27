@@ -18,6 +18,8 @@ public class TasksEntity {
     private int id;
     @Column(name = "name")
     private String name;
+    @Column(name = "description")
+    private String description;
     @Temporal(TemporalType.DATE)
     @Column(name = "start_date")
     private Date startDate;

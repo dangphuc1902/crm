@@ -231,6 +231,7 @@
                                     <th>STT</th>
                                     <th>Tên Công Việc</th>
                                     <th>Dự Án</th>
+                                    <th>Người thực hiện</th>
                                     <th>Ngày Bắt Đầu</th>
                                     <th>Ngày Kết Thúc</th>
                                     <th>Trạng Thái</th>
@@ -247,7 +248,7 @@
                                     <td th:text="${#dates.format(item.getEndDate(), 'dd-MM-yyyy')}"></td>
                                     <td th:text="${item.getStatusEntity().getName()}"></td>
                                     <td>
-                                        <a th:href="@{/task/update/{task_id}(task_id = ${item.id})}" class="btn btn-sm btn-primary">Cập nhật</a>
+                                        <a th:href="@{/profile/update/{task_id}(task_id = ${item.id})}" class="btn btn-sm btn-primary">Cập nhật</a>
                                     </td>
                                 </tr>
                                 </tbody>

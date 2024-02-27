@@ -2,12 +2,15 @@ package com.crmapp.crm.controller;
 
 import com.crmapp.crm.entity.JobsEntity;
 import com.crmapp.crm.entity.RolesEntity;
+import com.crmapp.crm.entity.TasksEntity;
 import com.crmapp.crm.entity.UsersEntity;
 import com.crmapp.crm.repository.UserRespository;
 import com.crmapp.crm.service.NameParserService;
 import com.crmapp.crm.service.RoleService;
+import com.crmapp.crm.service.TaskService;
 import com.crmapp.crm.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -34,9 +37,9 @@ public class UserController {
 
     @Autowired
     private RoleService roleService;
-
     @Autowired
-    private NameParserService nameParserService;
+    private TaskService taskService;
+
 
     @GetMapping("/add")
     public String userAdd(Model model){
@@ -108,11 +111,57 @@ public class UserController {
         model.addAttribute("listRole",listRole);
         return "redirect:/user/table";
     }
-//  Show user details.
     @GetMapping("/details/{user_id}")
-    public String userDetails(@PathVariable(name = "user_id") int id, Model model){
-        List<UsersEntity> listUser = userService.getAllUser();
-        model.addAttribute("listUser",listUser);
+    public String userDetails( @PathVariable("user_id") int id,  Model model){
+        UsersEntity user = userService.getUserId(id);
+        model.addAttribute("usersEntity", user);
+        List<TasksEntity> tasksEntities = taskService.findByUsersEntity(user);
+        List<TasksEntity> taskUnfulfilled = userService.checkTasksUnfulfilled(tasksEntities);
+        model.addAttribute("unfulfilled", taskUnfulfilled);
+
+        List<TasksEntity> taskProcessing = userService.checkTasksProcessing(tasksEntities);
+        model.addAttribute("processing", taskProcessing);
+
+        List<TasksEntity> taskMade = userService.checkTasksMade(tasksEntities);
+        model.addAttribute("made", taskMade);
+
+        int quantityUnfulfilled = userService.getTaskUnfulfilled(tasksEntities);
+        model.addAttribute("quantityUnfulfilled", quantityUnfulfilled);
+
+        int quantityProcessing = userService.getTaskProcessing(tasksEntities);
+        model.addAttribute("quantityProcessing", quantityProcessing);
+
+        int quantityCompleted = userService.getTaskCompleted(tasksEntities);
+        model.addAttribute("quantityCompleted", quantityCompleted);
+
+        return "user-details";
+    }
+//  Show user details.
+    @GetMapping("/userdetails")
+    public String userDetails( Model model, HttpServletRequest request){
+        // Lấy lấy user từ sesion ở login
+        HttpSession session = request.getSession();
+        UsersEntity user = userService.getUserBySession(session);
+        model.addAttribute("usersEntity", user);
+        List<TasksEntity> tasksEntities = taskService.findByUsersEntity(user);
+        List<TasksEntity> taskUnfulfilled = userService.checkTasksUnfulfilled(tasksEntities);
+        model.addAttribute("unfulfilled", taskUnfulfilled);
+
+        List<TasksEntity> taskProcessing = userService.checkTasksProcessing(tasksEntities);
+        model.addAttribute("processing", taskProcessing);
+
+        List<TasksEntity> taskMade = userService.checkTasksMade(tasksEntities);
+        model.addAttribute("made", taskMade);
+
+        int quantityUnfulfilled = userService.getTaskUnfulfilled(tasksEntities);
+        model.addAttribute("quantityUnfulfilled", quantityUnfulfilled);
+
+        int quantityProcessing = userService.getTaskProcessing(tasksEntities);
+        model.addAttribute("quantityProcessing", quantityProcessing);
+
+        int quantityCompleted = userService.getTaskCompleted(tasksEntities);
+        model.addAttribute("quantityCompleted", quantityCompleted);
+
         return "user-details";
     }
 }

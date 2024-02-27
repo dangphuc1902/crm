@@ -71,7 +71,7 @@
                             </a>
                             <ul class="dropdown-menu">
                                 <li><a th:href="@{/profile/table}">Thông tin cá nhân</a></li>
-                                <li><a href="#">Thống kê công việc</a></li>
+                                <li><a th:href="@{/user/userdetails}">Thống kê công việc</a></li>
                                 <li class="divider"></li>
                                 <li><a th:href="@{/login}">Đăng xuất</a></li>
                             </ul>
@@ -151,6 +151,13 @@
                                     </div>
                                 </div>
                                 <div class="form-group">
+                                    <label class="col-md-12">Miêu tả công việc</label>
+                                    <div class="col-md-12">
+                                        <input type="text" placeholder="Miêu tả công việc"
+                                               class="form-control form-control-line" name="description" th:value="${tasksEntity.getDescription()}">
+                                    </div>
+                                </div>
+                                <div class="form-group">
                                     <label class="col-md-12">Người thực hiện</label>
                                     <div class="col-md-12">
                                         <div class="col-md-12">
@@ -173,7 +180,6 @@
                                     <div class="col-md-12">
                                         <input type="text" placeholder="dd/MM/yyyy"
                                             class="form-control form-control-line" name="endDate" th:value="${#dates.format(tasksEntity.getEndDate(), 'dd-MM-yyyy')}">
-                                        <h3 style="color: red;text-align: center" th:if="${isProcessAddSucces == false}" >Thêm công việc thất bại !</h3>
                                     </div>
                                 </div>
                                 <div class="form-group">
@@ -191,6 +197,7 @@
                                     </div>
                                     <h3 style="color: blue;text-align: center" th:if="${isProcessAddSucces == true}" >Thêm công việc thành công !</h3>
                                     <h3 style="color: red;text-align: center" th:if="${isProcessAddSucces == false}" >Thêm công việc thất bại !</h3>
+                                    <h3 th:text="${notification}" style="color: red"></h3>
                                 </div>
                             </form>
                         </div>

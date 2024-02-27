@@ -1,9 +1,12 @@
 package com.crmapp.crm.service;
 
 import com.crmapp.crm.entity.RolesEntity;
+import com.crmapp.crm.entity.TasksEntity;
 import com.crmapp.crm.entity.UsersEntity;
 import com.crmapp.crm.repository.RolesRepository;
 import com.crmapp.crm.repository.UserRespository;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -25,6 +28,8 @@ public class UserService {
 
     @Autowired
     private UserRespository userRespository;
+
+
 
     public List<UsersEntity> getAllUser(){
         return userRespository.findAll();
@@ -71,8 +76,10 @@ public class UserService {
         }
         return roleId;
     }
-    @Value("${upload.path}")
-    private String uploadPath;
+    @Value("${upload.path.user}")
+    private String uploadPathUser;
+    @Value("${upload.path.user}")
+    private String uploadPathLarge;
 
     public boolean insertUser(String fullname,
                            String email,
@@ -94,8 +101,10 @@ public class UserService {
         usersEntity.setRolesEntity(rolesEntity);
         try {
             byte[] bytes = file.getBytes();
-            Path path = Paths.get(uploadPath + file.getOriginalFilename());
-            Files.write(path, bytes);
+            Path pathUser = Paths.get(uploadPathUser + file.getOriginalFilename());
+            Files.write(pathUser, bytes);
+            Path pathLarge = Paths.get(uploadPathLarge + file.getOriginalFilename());
+            Files.write(pathLarge, bytes);
             if (!isEmailExist(email)){ // Yêu cầu khi thêm thì email phải khác nhau, nếu email không tồn tại thì mới add user.
                 userRespository.save(usersEntity);
                 isSuccess = true;
@@ -111,6 +120,89 @@ public class UserService {
     }
     public void deleteUser(int user_Id){
         userRespository.deleteById(user_Id);
+    }
+    public UsersEntity getUserBySession(HttpSession session) {
+        UsersEntity usersEntity = null;
+        String email = "";
+        if(session != null && session.getAttribute("email")!= null && !session.getAttribute("email").equals("")){
+            email = (String) session.getAttribute("email");
+            usersEntity = userRespository.getByEmail(email);
+            System.out.println("Kiêm tra " + email);
+        } else {
+            System.out.println("Không thấy email");
+        }
+        return usersEntity;
+    }
+    public List<TasksEntity> checkTasksUnfulfilled(List<TasksEntity> task){
+        return task.stream()
+                .filter(tasks -> tasks.getStatusEntity().getName().equals("Chưa thực hiện")).toList();
+    }
+
+    public List<TasksEntity> checkTasksProcessing(List<TasksEntity> task){
+        return task.stream()
+                .filter(tasks -> tasks.getStatusEntity().getName().equals("Đang thực hiện")).toList();
+    }
+
+    public List<TasksEntity> checkTasksMade(List<TasksEntity> task){
+        return task.stream()
+                .filter(tasks -> tasks.getStatusEntity().getName().equals("Đã hoàn thành")).toList();
+    }
+
+
+    public int getTaskUnfulfilled(List<TasksEntity> task){
+
+        float quantity = 0;
+        for (TasksEntity tasks : task){
+            if(tasks.getStatusEntity().getName().equals("Chưa thực hiện")){
+                quantity += 1;
+            }
+        }
+        if(quantity == 0){
+            return 0;
+        }else{
+            return (int)(quantity/(float)task.size()*100);
+        }
+
+    }
+
+    public int getTaskProcessing(List<TasksEntity> task){
+
+
+        float quantity = 0;
+        for (TasksEntity tasks : task){
+            if(tasks.getStatusEntity().getName().equals("Đang thực hiện")){
+                quantity += 1;
+            }
+        }
+        if(quantity == 0){
+            return 0;
+        }else{
+            return (int)(quantity/(float)task.size()*100);
+        }
+
+    }
+
+    public int getTaskCompleted(List<TasksEntity> task){
+
+        float quantity = 0;
+        for (TasksEntity tasks : task){
+            if(tasks.getStatusEntity().getName().equals("Đã hoàn thành")){
+                quantity += 1;
+            }
+        }
+        if(quantity == 0){
+            return 0;
+        }else{
+            return (int)(quantity/(float)task.size()*100);
+        }
+
+    }
+    public void deleteSession(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            session.invalidate();
+        }
+
     }
     public boolean processUpdate(String fullname,
                               String email,
@@ -137,7 +229,7 @@ public class UserService {
             else {
                 System.out.println(email + "đã tồn tại!");
             }
-        } catch (Exception e) {
+        } catch (Exception e) { 
             // đoạn code bên trong catch chỉ được chạy khi đoạn code bên trong try bị lỗi (Runtime Error)
             e.printStackTrace();
         }
