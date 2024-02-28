@@ -38,7 +38,6 @@ public class ProfileController {
         String avatarPath = usersEntity.getAvatarPath();
         httpSession.setAttribute("avatarPath",avatarPath);
         httpSession.setMaxInactiveInterval(8*60*60);
-        System.out.println("Kiểm tra avatar Path: " + avatarPath);
         model.addAttribute("avatarPath",avatarPath);
         List<TasksEntity> task = taskService.findByUsersEntity(usersEntity);
         model.addAttribute("taskList",task);

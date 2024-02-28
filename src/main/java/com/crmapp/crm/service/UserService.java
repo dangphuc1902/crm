@@ -78,7 +78,7 @@ public class UserService {
     }
     @Value("${upload.path.user}")
     private String uploadPathUser;
-    @Value("${upload.path.user}")
+    @Value("${upload.path.large}")
     private String uploadPathLarge;
 
     public boolean insertUser(String fullname,
@@ -89,22 +89,26 @@ public class UserService {
                            RolesEntity rolesEntity){
 
         boolean isSuccess = false;  // biến flag kiểm tra xem có thêm user thành công hay không, mặc định là không (false)
-        UsersEntity usersEntity = new UsersEntity();
-        usersEntity.setFullname(fullname);
-        String[] nameParts = nameParserService.getFirstNameAndLastName(fullname);
-        usersEntity.setFirstname(nameParts[0]);
-        usersEntity.setLastname(nameParts[1]);
-        usersEntity.setEmail(email);
-        usersEntity.setPassword(password);
-        usersEntity.setPhonenumber(phoneNumber);
-        usersEntity.setAvatarPath(path.toString());
-        usersEntity.setRolesEntity(rolesEntity);
+
         try {
             byte[] bytes = file.getBytes();
             Path pathUser = Paths.get(uploadPathUser + file.getOriginalFilename());
             Files.write(pathUser, bytes);
+            System.out.println("Check pathUser:" + pathUser.toString() + " " + Files.write(pathUser, bytes));
             Path pathLarge = Paths.get(uploadPathLarge + file.getOriginalFilename());
             Files.write(pathLarge, bytes);
+            String originalPath = pathUser.toString();
+            String newPath = originalPath.replace("src\\main\\resources\\static\\plugins\\images\\users\\", "");
+            UsersEntity usersEntity = new UsersEntity();
+            usersEntity.setFullname(fullname);
+            String[] nameParts = nameParserService.getFirstNameAndLastName(fullname);
+            usersEntity.setFirstname(nameParts[0]);
+            usersEntity.setLastname(nameParts[1]);
+            usersEntity.setEmail(email);
+            usersEntity.setPassword(password);
+            usersEntity.setPhonenumber(phoneNumber);
+            usersEntity.setAvatarPath(newPath);
+            usersEntity.setRolesEntity(rolesEntity);
             if (!isEmailExist(email)){ // Yêu cầu khi thêm thì email phải khác nhau, nếu email không tồn tại thì mới add user.
                 userRespository.save(usersEntity);
                 isSuccess = true;
