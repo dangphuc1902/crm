@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Date;
+import java.util.List;
 
 
 @Getter
@@ -27,5 +28,6 @@ public class JobsEntity {
     @Temporal(TemporalType.DATE)
     @Column(name = "end_date")
     private Date endDate;
-
+    @OneToMany(mappedBy = "jobsEntity")
+    private List<TasksEntity> tasks;
 }

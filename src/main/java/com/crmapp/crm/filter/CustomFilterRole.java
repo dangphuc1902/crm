@@ -17,7 +17,7 @@ public class CustomFilterRole implements Filter {
         // response: server truyền vào Client.
         HttpSession session = request.getSession();     //Session tạo cookie là idsession.=> Lấy IDsesstion ở client. Yêu client dùng gửi lên server
         if ( session != null && session.getAttribute("email") != null && !session.getAttribute("email").equals("")){
-            if (session.getAttribute("role").equals("ROLE_ADMIN")){
+            if (session.getAttribute("roleName").equals("ROLE_ADMIN")){
                 chain.doFilter(servletRequest,servletResponse);
             }else {
                 response.sendRedirect("http://localhost:8080/error404");

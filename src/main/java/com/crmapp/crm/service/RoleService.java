@@ -45,9 +45,53 @@ public void insertRole(String roleName, String description,Model model){
 
     }
 }
+    private boolean checkRoleName(String roleName) {
+        List<RolesEntity> rolesEntityList = rolesRepository.findAll();
+        return rolesEntityList.stream().anyMatch(role -> role.getName().equalsIgnoreCase(roleName));
+    }
 
-    public RolesEntity updateRole(RolesEntity rolesEntity) {
-        return rolesRepository.save(rolesEntity);
+    private boolean checkForNull(String roleName, String desc){
+        return roleName != null && !roleName.isEmpty() && desc != null && !desc.isEmpty();
+    }
+    public String notificationUpdate(String roleName, String desc, RolesEntity role){
+        if(roleName == null || roleName.isEmpty()){
+            return "Vui lòng nhập tên quyền!";
+        } else if (desc == null || desc.isEmpty()) {
+            return "Vui lòng nhập mô tả!";
+        } else if (roleName.equalsIgnoreCase(role.getName())) {
+            return "";
+        } else if (checkRoleName(roleName)) {
+            return "Tên quyền đã tồn tại!";
+        } else {
+            return "";
+        }
+    }
+    public RolesEntity getRoleById(int id) {
+        // Optional: có hoặc không có cũng được.
+        // Optional chứa các hàm hỗ trợ sẵn giúp kiểm tra giá trị có null hay không để tránh bị lỗi null dữ liệu trong quá trình sử lí
+        RolesEntity dataRole = null;
+        Optional<RolesEntity> rolesEntity = rolesRepository.findById(id);
+        // isPresent : kiểm tra xem biến có giá trị hay không nếu là true tức biến có giá trị, nếu là false th sẻ không có giá trị
+
+        if (rolesEntity.isPresent()) {
+            dataRole = rolesEntity.get();
+        }
+
+        return dataRole;
+    }
+
+    public boolean updateRole(String roleName, String desc, RolesEntity rolesEntity, RolesEntity role){
+        boolean isSuccess = false;
+
+        if(checkForNull(roleName, desc) && (roleName.equalsIgnoreCase(role.getName()) || !checkRoleName(roleName))){
+            try {
+                rolesRepository.save(rolesEntity);
+                isSuccess = true;
+            }catch (Exception e){
+                System.out.println("Lỗi Thêm dữ lệu" + e.getMessage());
+            }
+        }
+        return isSuccess;
     }
 
     public RolesEntity getRoleId(int role_id){

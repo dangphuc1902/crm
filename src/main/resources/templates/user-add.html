@@ -63,15 +63,15 @@
                     <ul class="nav navbar-top-links navbar-right pull-right">
                         <li>
                             <div class="dropdown">
-                                <a class="profile-pic dropdown-toggle" data-toggle="dropdown" href="#"> 
-                                    <img src="plugins/images/users/varun.jpg" alt="user-img" width="36" class="img-circle" />
+                                <a class="profile-pic dropdown-toggle" data-toggle="dropdown" href="#">
+                                    <img th:src="${avatarPath}" alt="user-img" width="36" class="img-circle" />
                                     <b class="hidden-xs">Cybersoft</b> 
                                 </a>
                                 <ul class="dropdown-menu">
                                     <li><a th:href="@{/profile/table}">Thông tin cá nhân</a></li>
                                     <li><a th:href="@{/user/userdetails}">Thống kê công việc</a></li>
                                     <li class="divider"></li>
-                                    <li><a th:href="@{/login}">Đăng xuất</a></li>
+                                    <li><a th:href="@{/user/logout}">Đăng xuất</a></li>
                                 </ul>
                             </div>
                         </li>
@@ -171,8 +171,8 @@
                                 </div>
                                 <div class="form-group">
                                     <div class="col-sm-12">
-                                        <button type="submit" class="btn btn-success">Add User</button>
-                                        <a href="user-table.html" class="btn btn-primary">Go back</a>
+                                        <button type="submit" class="btn btn-success">Thêm thành viên</button>
+                                        <a th:href="@{./user/table}" class="btn btn-primary">Quay lại</a>
                                     </div>
                                     <h3 style="color: blue;text-align: center" th:if="${insertUser == true}" >Thêm thành viên thành công !</h3>
                                     <h3 style="color: red;text-align: center" th:if="${insertUser == false}" >Thêm thành viên thất bại !</h3>
@@ -181,6 +181,7 @@
                         </div>
                     </div>
                     <div class="col-md-2 col-12"></div>
+
                 </div>
                 <!-- /.row -->
             </div>

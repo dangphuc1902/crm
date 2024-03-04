@@ -48,11 +48,21 @@ public class ProfileService {
         if(session != null && session.getAttribute("email")!= null && !session.getAttribute("email").equals("")){
             email = (String) session.getAttribute("email");
             usersEntity = userRespository.getByEmail(email);
-            System.out.println("Kiêm tra " + email);
         } else {
             System.out.println("Không thấy email");
         }
         return usersEntity;
     }
 
+//    public String getAvatarPathBySession(HttpSession session) {
+//        String avatarPath = null;
+//        UsersEntity usersEntity = getUserBySession(session);
+//        if (usersEntity != null) {
+//            avatarPath = usersEntity.getAvatarPath();
+//        } else {
+//            avatarPath = "/plugins/images/users/avatadefault.jpg";
+//        }
+//
+//        return avatarPath;
+//    }
 }

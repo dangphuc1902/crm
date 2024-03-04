@@ -1,8 +1,11 @@
 package com.crmapp.crm.controller;
 
 import com.crmapp.crm.entity.RolesEntity;
+import com.crmapp.crm.entity.UsersEntity;
 import com.crmapp.crm.repository.RolesRepository;
 import com.crmapp.crm.service.RoleService;
+import com.crmapp.crm.service.UserService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -26,7 +29,8 @@ public class RoleController {
 
     @Autowired
     private RolesRepository rolesRepository;
-
+    @Autowired
+    private UserService  userService;
 
     @Autowired
     private RoleService roleService;    // Gọi Service
@@ -38,13 +42,19 @@ public class RoleController {
 * */
 
     @GetMapping("/add")
-    public String add(Model model){
+    public String add(Model model, HttpSession httpSession){
+        UsersEntity users = userService.getUserBySession(httpSession);
+        String avatarPath = userService.getPathAvata(users);
+        model.addAttribute("avatarPath",avatarPath);
         //TODO note:  Thêm dữ liệu vào bảng role và không gán giá trị cho kháo chính Id
 
         return "role-add.html";
     }
     @GetMapping("/table")
-    public String tableRole(Model model){
+    public String tableRole(Model model,  HttpSession session){
+        UsersEntity users = userService.getUserBySession(session);
+        String avatarPath = userService.getPathAvata(users);
+        model.addAttribute("avatarPath",avatarPath);
         List<RolesEntity> listRole = roleService.getAllRole();     // Get Service
         model.addAttribute("tableRole",listRole);       // trả dữ liệu về giao diện.
         return "role-table";
@@ -56,7 +66,7 @@ public class RoleController {
     }
     @PostMapping("/add")
     public String processAdd(@RequestParam String roleName,
-                             @RequestParam String description,Model model
+                             @RequestParam(name = "description") String description,Model model
                              ){
         roleService.insertRole(roleName,description,model);
 
@@ -68,23 +78,35 @@ public class RoleController {
 //     * - B1: Tạo đường dẫn load giao diện thêm mới quyền.
 //    *  B2: Khi ngưi dùng click vào role muốn chỉnh sửa thì phải gán động od vào đường dẫn biết được người dùng đang click vào role nào muốn chỉnh sửa.
 //     * */
-    @GetMapping("/update/{roleId}")
-    public String update(@PathVariable(name = "roleId") int id, Model model){
-        RolesEntity rolesEntity =  roleService.getRoleId(id);
-        model.addAttribute("rolesEntity", rolesEntity);     // trả đối tượng ra giao diện luôn.
+//
+    @GetMapping("/update/{id}")
+    public String editRole(@PathVariable int id, Model model,  HttpSession httpSession){
+        UsersEntity users = userService.getUserBySession(httpSession);
+        String avatarPath = userService.getPathAvata(users);
+        model.addAttribute("avatarPath",avatarPath);
+        RolesEntity rolesEntity = roleService.getRoleById(id);
+        model.addAttribute("roleEntity", rolesEntity);
 
-        // truyền tham id vaoo để truyen tham số qua và biết được đang sửa id nào từ đó lấy được role name.
-        return "revisionRole";
+        return "role-update";
     }
-    @PostMapping("/update/{roleId}")
-    public String processUpdate(@PathVariable(name = "roleId") int id, @RequestParam String roleName,
-                                @RequestParam String description,Model model){
+
+    @PostMapping("/update/{id}")
+    public String progressRole(@PathVariable int id, @RequestParam String roleName, @RequestParam String desc, Model model){
+
+        RolesEntity role = roleService.getRoleById(id);
         RolesEntity rolesEntity = new RolesEntity();
-        rolesEntity.setId(id);          // set id chức năng update.
+        rolesEntity.setId(id);
         rolesEntity.setName(roleName);
-        rolesEntity.setDescription(description);
-        roleService.updateRole(rolesEntity);
-        model.addAttribute("rolesEntity", rolesEntity);     // trả đối tượng ra giao diện luôn.
-        return "redirect:/role/table";
+        rolesEntity.setDescription(desc);
+
+        String notification = roleService.notificationUpdate(roleName,desc, role);
+        model.addAttribute("notification", notification);
+
+        boolean checckIsSuccess = roleService.updateRole(roleName,desc, rolesEntity, role);
+        model.addAttribute("checckIsSuccess", checckIsSuccess);
+
+        model.addAttribute("roleEntity", rolesEntity);
+
+        return "role-update";
     }
 }

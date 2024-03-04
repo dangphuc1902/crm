@@ -67,14 +67,14 @@
                         <li>
                             <div class="dropdown">
                                 <a class="profile-pic dropdown-toggle" data-toggle="dropdown" href="#"> 
-                                    <img src="plugins/images/users/varun.jpg" alt="user-img" width="36" class="img-circle" />
+                                    <img th:src="${avatarPath}" alt="user-img" width="36" class="img-circle" />
                                     <b class="hidden-xs">Cybersoft</b> 
                                 </a>
                                 <ul class="dropdown-menu">
                                     <li><a th:href="@{/profile/table}">Thông tin cá nhân</a></li>
                                     <li><a th:href="@{/user/userdetails}">Thống kê công việc</a></li>
                                     <li class="divider"></li>
-                                    <li><a th:href="@{/login}">Đăng xuất</a></li>
+                                    <li><a th:href="@{/user/logout}">Đăng xuất</a></li>
                                 </ul>
                             </div>
                         </li>
@@ -128,7 +128,7 @@
                         <h4 class="page-title">Danh sách công việc</h4>
                     </div>
                     <div class="col-lg-9 col-sm-8 col-md-8 col-xs-12 text-right">
-                        <a href="./task/add" class="btn btn-sm btn-success">Thêm mới</a>
+                        <a th:href="@{./task/add}" class="btn btn-sm btn-success">Thêm mới</a>
                     </div>
                     <!-- /.col-lg-12 -->
                 </div>
@@ -151,7 +151,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr th:each="item,index: ${taskList}">
+                                        <tr th:each="item,index: ${task}">
                                             <td th:text="${index.count}"></td>
                                             <td th:text="${item.getName()}"></td>
                                             <td th:text="${item.getJobsEntity().getName()}"></td>

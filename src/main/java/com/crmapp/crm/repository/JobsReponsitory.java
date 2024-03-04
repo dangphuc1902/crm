@@ -8,4 +8,5 @@ import java.util.Date;
 
 @Repository
 public interface JobsReponsitory extends JpaRepository<JobsEntity,Integer> {
+
 }

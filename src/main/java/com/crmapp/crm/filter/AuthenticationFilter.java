@@ -14,7 +14,7 @@ public class AuthenticationFilter implements Filter {
         HttpServletResponse response = (HttpServletResponse) servletResponse;
         HttpSession session = request.getSession();
 
-        if(session.getAttribute("role").equals("ROLE_ADMIN")){
+        if(session.getAttribute("roleName").equals("ROLE_ADMIN")){
 
             filterChain.doFilter(servletRequest, servletResponse);
         }else {

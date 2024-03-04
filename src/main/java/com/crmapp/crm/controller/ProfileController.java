@@ -5,6 +5,7 @@ import com.crmapp.crm.entity.StatusEntity;
 import com.crmapp.crm.entity.TasksEntity;
 import com.crmapp.crm.entity.UsersEntity;
 import com.crmapp.crm.service.*;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,24 +32,40 @@ public class ProfileController {
     @Autowired
     private StatusService statusService;
     @GetMapping("/table")
-    public String profile(Model model, HttpSession httpSession,
-                          HttpServletResponse response){
-        UsersEntity usersEntity = profileService.getUserBySession(httpSession);
-        model.addAttribute("usersEntity",usersEntity);
+    public String ShowProfile(Model model, HttpServletRequest request, HttpSession httpSession){
+        HttpSession session = request.getSession();
+        UsersEntity usersEntity = userService.getUserBySession(session);
+        model.addAttribute("usersEntity", usersEntity );
         String avatarPath = usersEntity.getAvatarPath();
+        model.addAttribute("avatarPath",avatarPath);
         httpSession.setAttribute("avatarPath",avatarPath);
         httpSession.setMaxInactiveInterval(8*60*60);
-        model.addAttribute("avatarPath",avatarPath);
-        List<TasksEntity> task = taskService.findByUsersEntity(usersEntity);
-        model.addAttribute("taskList",task);
-        profileService.jobNumber(model);
+        List<TasksEntity> tasksEntities = taskService.findByUsersEntity(usersEntity);
+        List<TasksEntity> taskUnfulfilled = userService.checkTasksUnfulfilled(tasksEntities);
+        model.addAttribute("unfulfilled", taskUnfulfilled);
+
+        List<TasksEntity> taskProcessing = userService.checkTasksProcessing(tasksEntities);
+        model.addAttribute("processing", taskProcessing);
+
+        List<TasksEntity> taskMade = userService.checkTasksMade(tasksEntities);
+        model.addAttribute("made", taskMade);
+
+        int quantityUnfulfilled = userService.getTaskUnfulfilled(tasksEntities);
+        model.addAttribute("quantityUnfulfilled", quantityUnfulfilled);
+
+        int quantityProcessing = userService.getTaskProcessing(tasksEntities);
+        model.addAttribute("quantityProcessing", quantityProcessing);
+
+        int quantityCompleted = userService.getTaskCompleted(tasksEntities);
+        model.addAttribute("quantityCompleted", quantityCompleted);
+
         return "profile";
     }
 
     @GetMapping("/update/{task_id}")
     public String getUpdateTask(@PathVariable(name = "task_id") int id, Model model){
-    TasksEntity tasksEntity = taskService.getTaskById(id);
-    model.addAttribute("tasksEntity",tasksEntity);
+    TasksEntity TasksEntity = taskService.getTaskById(id);
+    model.addAttribute("TasksEntity",TasksEntity);
     List<JobsEntity> listJobs = jobsService.getAlljob();
     model.addAttribute("listJobs",listJobs);
     List<UsersEntity> listUser = userService.getAllUser();

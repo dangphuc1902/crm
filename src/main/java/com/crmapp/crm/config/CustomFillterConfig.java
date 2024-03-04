@@ -26,10 +26,9 @@ public class CustomFillterConfig {
 
     @Bean
     public FilterRegistrationBean<PermissionFilter> filterConfig(){
-
         FilterRegistrationBean<PermissionFilter> registrationBean = new FilterRegistrationBean<>();
         registrationBean.setFilter(new PermissionFilter());
-        registrationBean.addUrlPatterns("/index/*","/profile/*", "/job/*", "/role/*", "/task/*", "/user/*"); // khi người dùng gọi link là /login mới kích hoạt filter
+        registrationBean.addUrlPatterns("/dashboard/*","/profile/*", "/jobs/*", "/role/*", "/task/*", "/user/*","");
         registrationBean.setOrder(2);
 
         return registrationBean;
@@ -41,7 +40,7 @@ public class CustomFillterConfig {
 
         FilterRegistrationBean<AuthenticationFilter> registrationBean = new FilterRegistrationBean<>();
         registrationBean.setFilter(new AuthenticationFilter());
-        registrationBean.addUrlPatterns("/role/*", "/user/add", "/user/update/*", "/user/delete/*"); // khi người dùng gọi link là /role mới kích hoạt filter
+        registrationBean.addUrlPatterns("/role/*","/jobs/add", "/user/add", "/user/update/*", "/user/delete/*");
         registrationBean.setOrder(3);
 
         return registrationBean;
@@ -53,8 +52,8 @@ public class CustomFillterConfig {
 
         FilterRegistrationBean<AdminAndManagerFilter> registrationBean = new FilterRegistrationBean<>();
         registrationBean.setFilter(new AdminAndManagerFilter());
-        registrationBean.addUrlPatterns("/user/look/*", "/job/add", "/job/update/*", "/job/delete/*",
-                "/task/add", "/task/update/*", "/task/delete/*");
+        registrationBean.addUrlPatterns("/user/*", "/jobs/add", "/jobs/update/*", "/jobs/delete/*",
+                "/task/add",  "/task/delete/*");
         registrationBean.setOrder(4);
 
         return registrationBean;

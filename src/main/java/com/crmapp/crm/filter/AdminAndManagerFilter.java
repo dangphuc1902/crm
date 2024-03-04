@@ -14,11 +14,11 @@ public class AdminAndManagerFilter implements Filter {
         HttpServletResponse response = (HttpServletResponse) servletResponse;
         HttpSession session = request.getSession();
 
-        if(session.getAttribute("roleName").equals("ROLE_ADMIN") || session.getAttribute("roleName").equals("ROLE_MANAGE")){
+        if(session.getAttribute("roleName").equals("ROLE_ADMIN") || session.getAttribute("roleName").equals("ROLE_MANAGER")){
 
             filterChain.doFilter(servletRequest, servletResponse);
         }else {
-            response.sendRedirect("http://localhost:8080/404");
+            response.sendRedirect("http://localhost:8080/error404");
         }
     }
 }

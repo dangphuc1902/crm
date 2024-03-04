@@ -64,14 +64,14 @@
                         <li>
                             <div class="dropdown">
                                 <a class="profile-pic dropdown-toggle" data-toggle="dropdown" href="#"> 
-                                    <img src="plugins/images/users/varun.jpg" alt="user-img" width="36" class="img-circle" />
+                                    <img th:src="${avatarPath}" alt="user-img" width="36" class="img-circle" />
                                     <b class="hidden-xs">Cybersoft</b> 
                                 </a>
                                 <ul class="dropdown-menu">
                                     <li><a href="profile.html">Thông tin cá nhân</a></li>
                                     <li><a th:href="@{/user/userdetails}">Thống kê công việc</a></li>
                                     <li class="divider"></li>
-                                    <li><a th:href="@{/login}">Đăng xuất</a></li>
+                                    <li><a th:href="@{/user/logout}">Đăng xuất</a></li>
                                 </ul>
                             </div>
                         </li>
@@ -152,8 +152,8 @@
                                 </div>
                                 <div class="form-group">
                                     <div class="col-sm-12">
-                                        <button type="submit" class="btn btn-success">Save Job</button>
-                                        <a th:href="@{/jobs/table}" class="btn btn-primary">Go back</a>
+                                        <button type="submit" class="btn btn-success">Thêm dự án</button>
+                                        <a th:href="@{/jobs/table}" class="btn btn-primary">Quay lại</a>
                                     </div>
                                     <h3 th:if="${idSuccess == true}" style="color: blue"> Thêm thành công, quay lại để xem chi tiết</h3>
                                     <h3 th:if="${idSuccess == false}" style="color: red"> Email đã tồn tại, vui lòng kiểm tra lại</h3>

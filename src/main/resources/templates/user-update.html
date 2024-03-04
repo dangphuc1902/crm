@@ -63,15 +63,15 @@
                     <ul class="nav navbar-top-links navbar-right pull-right">
                         <li>
                             <div class="dropdown">
-                                <a class="profile-pic dropdown-toggle" data-toggle="dropdown" href="#"> 
-                                    <img src="plugins/images/users/varun.jpg" alt="user-img" width="36" class="img-circle" />
+                                <a class="profile-pic dropdown-toggle" data-toggle="dropdown" href="#">
+                                    <img th:src="${avatarPath}" alt="user-img" width="36" class="img-circle" />
                                     <b class="hidden-xs">Cybersoft</b> 
                                 </a>
                                 <ul class="dropdown-menu">
                                     <li><a th:href="@{/profile/table}">Thông tin cá nhân</a></li>
                                     <li><a th:href="@{/user/userdetails}">Thống kê công việc</a></li>
                                     <li class="divider"></li>
-                                    <li><a th:href="@{/login}">Đăng xuất</a></li>
+                                    <li><a th:href="@{/user/logout}">Đăng xuất</a></li>
                                 </ul>
                             </div>
                         </li>
@@ -131,7 +131,7 @@
                     <div class="col-md-2 col-12"></div>
                     <div class="col-md-8 col-xs-12">
                         <div class="white-box">
-                            <form class="form-horizontal form-material" th:action="@{/user/update/{user_id}(user_id=${usersEntity.id})}" method="post">
+                            <form class="form-horizontal form-material" enctype="multipart/form-data" th:action="@{/user/update/{user_id}(user_id=${usersEntity.id})}" method="post">
                                 <div class="form-group">
                                     <label class="col-md-12">Full Name</label>
                                     <div class="col-md-12">
@@ -159,6 +159,11 @@
                                             class="form-control form-control-line" name="phoneNumber"> </div>
                                 </div>
                                 <div class="form-group">
+                                    <label class="col-md-12">Upload Avata</label>
+                                    <input type="file" name="fileImage" value="avata"  />
+<!--                                    <input type="text" name="pathImage" th:value="${usersEntity.getAvatarPath()}"  />-->
+                                </div>
+                                <div class="form-group">
                                     <label class="col-sm-12">Select Role</label>
                                     <div class="col-sm-12">
                                         <select class="form-control form-control-line" name="selectedRoleId" >
@@ -168,8 +173,8 @@
                                 </div>
                                 <div class="form-group">
                                     <div class="col-sm-12">
-                                        <button type="submit" class="btn btn-success">Update User</button>
-                                        <a href="user-table.html" class="btn btn-primary">Quay lại</a>
+                                        <button type="submit" class="btn btn-success">Cập nhật thành viên</button>
+                                        <a href="./user/update/" class="btn btn-primary">Quay lại</a>
                                     </div>
                                     <h3 style="color: blue;text-align: center" th:if="${isSuccess == true}" >Thêm thành viên thành công !</h3>
                                     <h3 style="color: red;text-align: center" th:if="${isSuccess == false}" >Thêm thành viên thất bại !</h3>

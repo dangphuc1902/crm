@@ -15,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.nio.file.Files;
@@ -40,6 +41,59 @@ public class UserService {
     public UsersEntity updateUserService(UsersEntity usersEntity){
         return userRespository.save(usersEntity);
     }
+
+    public int getTaskUnfulfilled(UsersEntity user){
+
+        List<TasksEntity> tasksEntities = user.getTasks();
+        float quantity = 0;
+        for (TasksEntity tasks : tasksEntities){
+            if(tasks.getStatusEntity().getName().equals("Chưa thực hiện")){
+                quantity += 1;
+            }
+        }
+        if(quantity == 0){
+            return 0;
+        }else{
+            return (int)(quantity/(float)tasksEntities.size()*100);
+        }
+
+    }
+
+    public int getTaskProcessing(UsersEntity user){
+
+        List<TasksEntity> tasksEntities = user.getTasks();
+        float quantity = 0;
+        for (TasksEntity tasks : tasksEntities){
+            if(tasks.getStatusEntity().getName().equals("Đang thực hiện")){
+                quantity += 1;
+            }
+        }
+        if(quantity == 0){
+            return 0;
+        }else{
+            return (int)(quantity/(float)tasksEntities.size()*100);
+        }
+
+    }
+
+    public int getTaskCompleted(UsersEntity user){
+
+        List<TasksEntity> tasksEntities = user.getTasks();
+        float quantity = 0;
+        for (TasksEntity tasks : tasksEntities){
+            if(tasks.getStatusEntity().getName().equals("Đã hoàn thành")){
+                quantity += 1;
+            }
+        }
+        if(quantity == 0){
+            return 0;
+        }else{
+            return (int)(quantity/(float)tasksEntities.size()*100);
+        }
+
+    }
+
+
     public UsersEntity getUserId(int user_id){
         // TODO Optional: Có hoặc không có cũng được. trong tất cả ngôn ngữ đều vậy
         // Lấy giá trị getRoleId
@@ -56,16 +110,9 @@ public class UserService {
     public UsersEntity save(UsersEntity usersEntity){
         return userRespository.save(usersEntity);
     }
-    public boolean isEmailExist(String email){
-        List<UsersEntity> listUsers = userRespository.findAll();// Lấy toàn bộ danh sách user từ DB
-        boolean isExist = false; // Đặt biến flag kiểm tra xem email có tồn tại trong DB hay không, Gán mặc định là không (flase)
-        for (UsersEntity user : listUsers){
-            if (user.getEmail().equalsIgnoreCase(email)){
-                isExist = true;
-                break;
-            }
-        }
-        return isExist;
+    private boolean isEmailExist(String email){
+        List<UsersEntity> usersList = userRespository.findAll();
+        return usersList.stream().anyMatch(users -> users.getEmail().equalsIgnoreCase(email));
     }
 
     public int getRoleId(){
@@ -98,7 +145,8 @@ public class UserService {
             Path pathLarge = Paths.get(uploadPathLarge + file.getOriginalFilename());
             Files.write(pathLarge, bytes);
             String originalPath = pathUser.toString();
-            String newPath = originalPath.replace("src\\main\\resources\\static\\plugins\\images\\users\\", "");
+            String newPathAvata = originalPath.replace("src\\main\\resources\\static\\plugins\\images\\users\\", "/plugins/images/users/");
+            System.out.println("newPath: " + newPathAvata);
             UsersEntity usersEntity = new UsersEntity();
             usersEntity.setFullname(fullname);
             String[] nameParts = nameParserService.getFirstNameAndLastName(fullname);
@@ -107,7 +155,7 @@ public class UserService {
             usersEntity.setEmail(email);
             usersEntity.setPassword(password);
             usersEntity.setPhonenumber(phoneNumber);
-            usersEntity.setAvatarPath(newPath);
+            usersEntity.setAvatarPath(newPathAvata);
             usersEntity.setRolesEntity(rolesEntity);
             if (!isEmailExist(email)){ // Yêu cầu khi thêm thì email phải khác nhau, nếu email không tồn tại thì mới add user.
                 userRespository.save(usersEntity);
@@ -121,6 +169,14 @@ public class UserService {
             e.printStackTrace();
         }
         return isSuccess;
+    }
+
+    public void deleteSession(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            session.invalidate();
+        }
+
     }
     public void deleteUser(int user_Id){
         userRespository.deleteById(user_Id);
@@ -141,7 +197,12 @@ public class UserService {
         return task.stream()
                 .filter(tasks -> tasks.getStatusEntity().getName().equals("Chưa thực hiện")).toList();
     }
-
+    public List<UsersEntity> getUserForUpdate(HttpSession session){
+        UsersEntity users = getUserBySession(session);
+        if(users.getRolesEntity().getName().equals("ROLE_USER")){
+            return Collections.singletonList(users);
+        }else return userRespository.findAll();
+    }
     public List<TasksEntity> checkTasksProcessing(List<TasksEntity> task){
         return task.stream()
                 .filter(tasks -> tasks.getStatusEntity().getName().equals("Đang thực hiện")).toList();
@@ -201,42 +262,73 @@ public class UserService {
         }
 
     }
-    public void deleteSession(HttpServletRequest request) {
-        HttpSession session = request.getSession(false);
-        if (session != null) {
-            session.invalidate();
-        }
+    private boolean checkForNull (String fullName, String email, String password, String phoneNo){
 
+        return fullName != null && !fullName.isEmpty()
+                && email != null && !email.isEmpty()
+                && password != null && !password.isEmpty()
+                && phoneNo != null && !phoneNo.isEmpty();
+    }
+    public String getPathAvatar(MultipartFile file){
+        String newPath = null;
+        try {
+            byte[] bytes = file.getBytes();
+            Path pathUser = Paths.get(uploadPathUser + file.getOriginalFilename());
+            Files.write(pathUser, bytes);
+            Path pathLarge = Paths.get(uploadPathLarge + file.getOriginalFilename());
+            Files.write(pathLarge, bytes);
+            String originalPath = pathUser.toString();
+            System.out.println("Kiểm tra originalPath:  " + originalPath);
+            String avataPath = originalPath.replace("src\\main\\resources\\static\\plugins\\images\\users\\", "/plugins/images/users/");
+            newPath = avataPath;
+            System.out.println("Check : " + newPath);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        return newPath;
     }
     public boolean processUpdate(String fullname,
                               String email,
                               String password,
                               int userid,
                               String phoneNumber,
+                             MultipartFile file,
                               RolesEntity rolesEntity){
         boolean isSuccess = false;  // biến flag kiểm tra xem có thêm user thành công hay không, mặc định là không (false)
+        String avataPath = getPathAvatar(file);
         UsersEntity usersEntity = new UsersEntity();
+        UsersEntity getUserId = getUserId(userid);
+//        System.out.println("Kiểm tra avata Path: " + ((avataPath == null) ? getUserId.getAvatarPath() : avataPath));
+        usersEntity.setId(userid);
         usersEntity.setFullname(fullname);
         String[] nameParts = nameParserService.getFirstNameAndLastName(fullname);
         usersEntity.setFirstname(nameParts[0]);
         usersEntity.setLastname(nameParts[1]);
-        usersEntity.setId(userid);
         usersEntity.setEmail(email);
         usersEntity.setPassword(password);
         usersEntity.setPhonenumber(phoneNumber);
         usersEntity.setRolesEntity(rolesEntity);
+        usersEntity.setAvatarPath((avataPath == null) ? getUserId.getAvatarPath() : avataPath);
+
         try {
-            if (!isEmailExist(email)){ // Yêu cầu khi thêm thì email phải khác nhau, nếu email không tồn tại thì mới add user.
+            if (checkForNull(fullname, email, password, phoneNumber) && (email.equalsIgnoreCase(getUserId.getEmail()) || !isEmailExist(email))){
                 userRespository.save(usersEntity);
+                System.out.println();
                 isSuccess = true;
             }
             else {
-                System.out.println(email + "đã tồn tại!");
+                System.out.println(email + " đã tồn tại!");
             }
-        } catch (Exception e) { 
+        } catch (Exception e) {
             // đoạn code bên trong catch chỉ được chạy khi đoạn code bên trong try bị lỗi (Runtime Error)
             e.printStackTrace();
         }
         return isSuccess;
+    }
+    public String getPathAvata(UsersEntity users){
+        String avatarPath = users.getAvatarPath();
+        if(avatarPath != null){
+            return avatarPath;
+        } else return "/plugins/images/users/avatadefault.jpg";
     }
 }

@@ -1,13 +1,14 @@
 package com.crmapp.crm.service;
 
 import com.crmapp.crm.entity.*;
+import com.crmapp.crm.repository.JobsReponsitory;
 import com.crmapp.crm.repository.TaskReponsitory;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class TaskService {
@@ -62,10 +63,10 @@ public class TaskService {
     }
 
     public TasksEntity getTaskById(int task_id) {
-        Optional<TasksEntity> tasksEntity = taskReponsitory.findById(task_id);
+        Optional<TasksEntity> TasksEntity = taskReponsitory.findById(task_id);
         TasksEntity datatask = null;
-        if (tasksEntity.isPresent()) {
-            datatask = tasksEntity.get();
+        if (TasksEntity.isPresent()) {
+            datatask = TasksEntity.get();
         }
         return datatask;
     }
@@ -78,19 +79,19 @@ public class TaskService {
 
     public boolean processAddTask(String nameTask,String description, JobsEntity jobsEntity, UsersEntity usersEntity, Date startDate, Date endDate, StatusEntity statusEntity) {
         boolean isSuccess = false;  // biến flag kiểm tra xem có thêm user thành công hay không, mặc định là không (false)
-        TasksEntity tasksEntity = new TasksEntity();
-        tasksEntity.setName(nameTask);
-        tasksEntity.setDescription(description);
-        tasksEntity.setJobsEntity(jobsEntity);
-        tasksEntity.setUsersEntity(usersEntity);
-        tasksEntity.setStartDate(startDate);
-        tasksEntity.setEndDate(endDate);
-        tasksEntity.setStatusEntity(statusEntity);
+        TasksEntity TasksEntity = new TasksEntity();
+        TasksEntity.setName(nameTask);
+        TasksEntity.setDescription(description);
+        TasksEntity.setJobsEntity(jobsEntity);
+        TasksEntity.setUsersEntity(usersEntity);
+        TasksEntity.setStartDate(startDate);
+        TasksEntity.setEndDate(endDate);
+        TasksEntity.setStatusEntity(statusEntity);
         try {
             if (!isNameTaskExist(nameTask) && checkConditions(nameTask,description,usersEntity, jobsEntity)
                     && checkConditionsDate(jobsEntity, startDate, endDate)) {
                 // Yêu cầu khi thêm thì email phải khác nhau, nếu email không tồn tại thì mới add user.
-                taskReponsitory.save(tasksEntity);
+                taskReponsitory.save(TasksEntity);
                 isSuccess = true;
             } else {
                 System.out.println(nameTask + "đã tồn tại!");
@@ -104,12 +105,12 @@ public class TaskService {
     public void deleteTask(int task_id){
         taskReponsitory.deleteById(task_id);
     }
-    public boolean checkConditionsUpdate(TasksEntity tasksEntity, String nameTask, UsersEntity usersEntity, JobsEntity jobsEntity){
+    public boolean checkConditionsUpdate(TasksEntity TasksEntity, String nameTask, UsersEntity usersEntity, JobsEntity jobsEntity){
         List<TasksEntity> tasksEntities = getAllTask();
         boolean isSuccess = true;
         // Khi update tên công việc, tên dự án, tên user có thẻ trùng với dữ liệu đưa lên
-        if(tasksEntity.getName().equalsIgnoreCase(nameTask) && tasksEntity.getUsersEntity().getId() == usersEntity.getId()
-                && tasksEntity.getJobsEntity().getId() == jobsEntity.getId()){
+        if(TasksEntity.getName().equalsIgnoreCase(nameTask) && TasksEntity.getUsersEntity().getId() == usersEntity.getId()
+                && TasksEntity.getJobsEntity().getId() == jobsEntity.getId()){
             return isSuccess;
         }else {
             for (TasksEntity task : tasksEntities){
@@ -131,14 +132,52 @@ public class TaskService {
         }
         return isSuccess;
     }
-    public String notificationUpdate(int id,JobsEntity jobsEntity, UsersEntity usersEntity, TasksEntity tasksEntity, String nameTask, Date startDate, Date endDate){
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private JobsService jobsService;
+    public List<TasksEntity> getTaskByRole(HttpSession session) {
+        List<TasksEntity> tasks = new ArrayList<>(List.of());
+        UsersEntity users = userService.getUserBySession(session);
+        if(users.getRolesEntity().getName().equals("ROLE_ADMIN")){
+            return taskReponsitory.findAll();
+        } else if(users.getRolesEntity().getName().equals("ROLE_MANAGER")) {
+            List<TasksEntity> tasksEntities = taskReponsitory.findAll();
+            List<JobsEntity> jobs = jobsService.getJobByRole(session);
+            tasks = tasksEntities.stream().filter(task -> jobs.stream().anyMatch(job -> task.getJobsEntity().getName().equals(job.getName()))).toList();
+        } else {
+            tasks = users.getTasks();
+        }
+
+        return tasks;
+    }
+    @Autowired
+    private JobsReponsitory jobsReponsitory;
+    public List<JobsEntity> getJobByRole(HttpSession session) {
+        List<JobsEntity> jobs = new ArrayList<>(List.of());
+        UsersEntity users = userService.getUserBySession(session);
+        if(users.getRolesEntity().getName().equals("ROLE_ADMIN")){
+            return jobsReponsitory.findAll();
+        } else {
+            List<TasksEntity> tasksEntities = users.getTasks();
+            tasksEntities.forEach(item -> jobs.add(item.getJobsEntity()));
+        }
+        return jobs.stream().distinct().collect(Collectors.toList());
+    }
+    public List<JobsEntity> getJobForUpdate(HttpSession session,TasksEntity TasksEntity){
+        UsersEntity users = userService.getUserBySession(session);
+        if(users.getRolesEntity().getName().equals("ROLE_USER")){
+            return Collections.singletonList(TasksEntity.getJobsEntity());
+        }else return getJobByRole(session);
+    }
+    public String notificationUpdate(JobsEntity jobsEntity, UsersEntity usersEntity, TasksEntity TasksEntity, String nameTask, Date startDate, Date endDate){
         if(nameTask == null || nameTask.isEmpty()){
             return "Vui lòng nhập tên công việc!";
         } else if (startDate == null || startDate == null) {
             return "Vui lòng nhập ngày bắt đầu!";
         }else if (endDate == null || endDate == null) {
             return "Vui lòng nhập ngày kết thúc!";
-        }else if (!checkConditions(nameTask, tasksEntity.getDescription(), usersEntity, jobsEntity)) {
+        }else if (!checkConditions(nameTask, TasksEntity.getDescription(), usersEntity, jobsEntity)) {
             return "Công việc đã được người này đảm nhận!";
         }else if (!checkConditionsDate(jobsEntity, startDate, endDate)) {
             return "Ngày của công việc phải nằm trong khoảng ngày của dự án!";
@@ -151,22 +190,22 @@ public class TaskService {
                 && startDate != null && startDate != null && description != null
                 && endDate != null && endDate != null;
     }
-    public boolean processUpdateTask(int id, String nameTask,String description, JobsEntity jobsEntity, UsersEntity usersEntity, Date startDate, Date endDate, StatusEntity statusEntity) {
+        public boolean processUpdateTask(int id, String nameTask,String description, JobsEntity jobsEntity, UsersEntity usersEntity, Date startDate, Date endDate, StatusEntity statusEntity) {
         boolean isSuccess = false;  // biến flag kiểm tra xem có thêm user thành công hay không, mặc định là không (false)
-        TasksEntity tasksEntity = new TasksEntity();
-        tasksEntity.setId(id);
-        tasksEntity.setDescription(description);
-        tasksEntity.setName(nameTask);
-        tasksEntity.setJobsEntity(jobsEntity);
-        tasksEntity.setUsersEntity(usersEntity);
-        tasksEntity.setStartDate(startDate);
-        tasksEntity.setEndDate(endDate);
-        tasksEntity.setStatusEntity(statusEntity);
+        TasksEntity TasksEntity = new TasksEntity();
+        TasksEntity.setId(id);
+        TasksEntity.setDescription(description);
+        TasksEntity.setName(nameTask);
+        TasksEntity.setJobsEntity(jobsEntity);
+        TasksEntity.setUsersEntity(usersEntity);
+        TasksEntity.setStartDate(startDate);
+        TasksEntity.setEndDate(endDate);
+        TasksEntity.setStatusEntity(statusEntity);
 
-        if(checkForNull(nameTask, description,startDate, endDate) && checkConditionsUpdate(tasksEntity, nameTask, usersEntity, jobsEntity)
+        if(checkForNull(nameTask, description ,startDate, endDate) && checkConditionsUpdate(TasksEntity, nameTask, usersEntity, jobsEntity)
                 && checkConditionsDate(jobsEntity, startDate, endDate)){
             try {
-                taskReponsitory.save(tasksEntity);
+                taskReponsitory.save(TasksEntity);
                 isSuccess = true;
             }catch (Exception e) {
                 System.out.println("Lỗi Thêm dữ lệu" + e.getMessage());

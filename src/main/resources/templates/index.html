@@ -70,14 +70,14 @@
                     <li>
                         <div class="dropdown">
                             <a class="profile-pic dropdown-toggle" data-toggle="dropdown" href="#"> 
-                                <img src="plugins/images/users/varun.jpg" alt="user-img" width="36" class="img-circle" />
+                                <img th:src="${avatarPath}" alt="user-img" width="36" class="img-circle" />
                                 <b class="hidden-xs">Cybersoft</b> 
                             </a>
                             <ul class="dropdown-menu">
                                 <li><a th:href="@{/profile/table}">Thông tin cá nhân</a></li>
                                 <li><a th:href="@{/user/userdetails}">Thống kê công việc</a></li>
                                 <li class="divider"></li>
-                                <li><a th:href="@{/login}">Đăng xuất</a></li>
+                                <li><a th:href="@{/user/logout}">Đăng xuất</a></li>
                             </ul>
                         </div>
                     </li>
@@ -144,12 +144,12 @@
                                 <h5 class="text-muted vb">CHƯA BẮT ĐẦU</h5>
                             </div>
                             <div class="col-md-6 col-sm-6 col-xs-6">
-                                <h3 class="counter text-right m-t-15 text-danger" th:text="${doNotTask}"></h3>
+                                <h3 class="counter text-right m-t-15 text-danger" th:text="${unfulfilled}"></h3>
                             </div>
                             <div class="col-md-12 col-sm-12 col-xs-12">
                                 <div class="progress">
                                     <div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="40"
-                                         aria-valuemin="0" aria-valuemax="100" style="width: 40%" th:style="'width:'+ ${doNotTask} +'%'"> <span
+                                         aria-valuemin="0" aria-valuemax="100" th:style="'width: ' + ${unfulfilledPercent} + '%'"> <span
                                             class="sr-only">40% Complete (success)</span> </div>
                                 </div>
                             </div>
@@ -166,13 +166,13 @@
                                 <h5 class="text-muted vb">ĐANG THỰC HIỆN</h5>
                             </div>
                             <div class="col-md-6 col-sm-6 col-xs-6">
-                                <h3 class="counter text-right m-t-15 text-megna" th:text="${doingTask}"></h3>
+                                <h3 class="counter text-right m-t-15 text-megna" th:text="${processing}"></h3>
                             </div>
                             <div class="col-md-12 col-sm-12 col-xs-12">
                                 <div class="progress">
                                     <div class="progress-bar progress-bar-megna" role="progressbar" aria-valuenow="40"
-                                         aria-valuemin="0" aria-valuemax="100" style="width: 40%" th:style="'width:'+ ${doingTask} +'%'"> <span
-                                            class="sr-only" >40% Complete (success)</span> </div>
+                                         aria-valuemin="0" aria-valuemax="100" th:style="'width: ' + ${processingPercent} + '%'"> <span
+                                            class="sr-only">40% Complete (success)</span> </div>
                                 </div>
                             </div>
                         </div>
@@ -188,13 +188,13 @@
                                 <h5 class="text-muted vb">ĐÃ HOÀN THÀNH</h5>
                             </div>
                             <div class="col-md-6 col-sm-6 col-xs-6">
-                                <h3 class="counter text-right m-t-15 text-primary" th:text="${doneTask}"></h3>
+                                <h3 class="counter text-right m-t-15 text-primary" th:text="${completed}"></h3>
                             </div>
                             <div class="col-md-12 col-sm-12 col-xs-12">
                                 <div class="progress">
                                     <div class="progress-bar progress-bar-primary" role="progressbar" aria-valuenow="40"
-                                         aria-valuemin="0" aria-valuemax="100" style="width: 40%"> <span
-                                            class="sr-only" th:style="'width:'+ ${doingTask} +'%'">40% Complete (success)</span> </div>
+                                         aria-valuemin="0" aria-valuemax="100" th:style="'width: ' + ${completedPercent} + '%'"> <span
+                                            class="sr-only">40% Complete (success)</span> </div>
                                 </div>
                             </div>
                         </div>

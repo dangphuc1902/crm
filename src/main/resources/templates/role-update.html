@@ -1,13 +1,14 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head>
+    <base th:href="@{/}">
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
     <meta name="author" content="">
-    <link rel="icon" type="image/png" sizes="16x16" href="/plugins/images/favicon.png">
+    <link rel="icon" type="image/png" sizes="16x16" th:href="@{/plugins/images/favicon.png}">
     <title>Pixel Admin</title>
     <!-- Bootstrap Core CSS -->
     <link th:href="@{/bootstrap/dist/css/bootstrap.min.css}" rel="stylesheet">
@@ -22,8 +23,8 @@
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
-    <script th:src="@{/https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js}"></script>
-    <script th:src="@{/https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js}"></script>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
 </head>
 
@@ -40,12 +41,12 @@
                 <i class="fa fa-bars"></i>
             </a>
             <div class="top-left-part">
-                <a class="logo" href="@{/index.html}">
+                <a class="logo" th:href="@{index.html}">
                     <b>
-                        <img th:src="@{/plugins/images/pixeladmin-logo.png}" alt="home" />
+                        <img th:src="@{plugins/images/pixeladmin-logo.png}" alt="home" />
                     </b>
                     <span class="hidden-xs">
-                                <img th:src="@{/plugins/images/pixeladmin-text.png}" alt="home" />
+                                <img th:src="@{plugins/images/pixeladmin-text.png}" alt="home" />
                             </span>
                 </a>
             </div>
@@ -63,12 +64,12 @@
                 <li>
                     <div class="dropdown">
                         <a class="profile-pic dropdown-toggle" data-toggle="dropdown" href="#">
-                            <img th:src="@{/plugins/images/users/varun.jpg}" alt="user-img" width="36" class="img-circle" />
+                            <img th:src="${avatarPath}"alt="user-img" width="36" class="img-circle" />
                             <b class="hidden-xs">Cybersoft</b>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a th:href="@{/profile/table}">Thông tin cá nhân</a></li>
-                            <li><a th:href="@{/user/userdetails}">Thống kê công việc</a></li>
+                            <li><a th:href="@{/user/profile}">Thông tin cá nhân</a></li>
+                            <li><a th:href="@{/user/detail}">Thống kê công việc</a></li>
                             <li class="divider"></li>
                             <li><a th:href="@{/user/logout}">Đăng xuất</a></li>
                         </ul>
@@ -98,15 +99,15 @@
                 </li>
                 <li>
                     <a href="./jobs/table" class="waves-effect"><i class="fa fa-table fa-fw"
-                                                                  aria-hidden="true"></i><span class="hide-menu">Dự án</span></a>
+                                                                   aria-hidden="true"></i><span class="hide-menu">Dự án</span></a>
                 </li>
                 <li>
                     <a href="./task/table" class="waves-effect"><i class="fa fa-table fa-fw"
-                                                             aria-hidden="true"></i><span class="hide-menu">Công việc</span></a>
+                                                                   aria-hidden="true"></i><span class="hide-menu">Công việc</span></a>
                 </li>
                 <li>
                     <a href="./blank" class="waves-effect"><i class="fa fa-columns fa-fw"
-                                                                   aria-hidden="true"></i><span class="hide-menu">Blank Page</span></a>
+                                                              aria-hidden="true"></i><span class="hide-menu">Blank Page</span></a>
                 </li>
                 <li>
                     <a href="./error404" class="waves-effect"><i class="fa fa-info-circle fa-fw"
@@ -121,7 +122,7 @@
         <div class="container-fluid">
             <div class="row bg-title">
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
-                    <h4 class="page-title">Chỉnh sửa quyền</h4>
+                    <h4 class="page-title">Cập nhật quyền</h4>
                 </div>
             </div>
             <!-- /.row -->
@@ -130,30 +131,30 @@
                 <div class="col-md-2 col-12"></div>
                 <div class="col-md-8 col-xs-12">
                     <div class="white-box">
-                        <form th:action="@{/role/update/{roleId}(roleId=${rolesEntity.id})}" method="POST"  class="form-horizontal form-material">
+                        <form th:action="@{/role/update/{id}(id = ${roleEntity.id})}" method="post" class="form-horizontal form-material">
                             <div class="form-group">
-                                <label class="col-md-12">Tên quyền</label>
+                                <label class="col-md-12" >Tên quyền</label>
                                 <div class="col-md-12">
-                                    <input type="text" placeholder="Tên quyền"
-                                           class="form-control form-control-line" name="roleName" th:value="${rolesEntity.getName()}"/>
-<!--                                    th:field="*{roleName}"-->
+                                    <input name="roleName" type="text" placeholder="Tên quyền"
+                                           class="form-control form-control-line" th:value="${roleEntity.name}"/>
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label class="col-md-12">Mô tả</label>
-                                <div class="col-md-12" >
-                                    <input type="text" th:value="${rolesEntity.getDescription()}" placeholder="Mô tả" class="form-control form-control-line" name="desc"/>
+                                <div class="col-md-12">
+                                    <input name="desc" type="text" placeholder="Mô tả"
+                                           class="form-control form-control-line" th:value="${roleEntity.description}" />
                                 </div>
                             </div>
                             <div class="form-group">
                                 <div class="col-sm-12">
-                                    <button type="submit" class="btn btn-success">Update Role</button>
-                                    <a href="role-table.html" class="btn btn-primary">Quay lại</a>
+                                    <button type="submit"  class="btn btn-success">Cập nhật</button>
+                                    <a th:href="@{/role/table}" class="btn btn-primary">Quay lại</a>
                                 </div>
-                                <h3 style="color: blue;text-align: center" th:if="${isSuccess == true}" >Thêm quyền thành công !</h3>
-                                <h3 style="color: red;text-align: center" th:if="${isSuccess == false}" >Thêm quyền thất bại !</h3>
                             </div>
                         </form>
+                        <h3 th:if="${checckIsSuccess}" style="color: #00AEEF"> Cập nhật thành công, quay lại để xem chi tiết</h3>
+                        <h3 th:text="${notification}" style="color: red"></h3>
                     </div>
                 </div>
                 <div class="col-md-2 col-12"></div>

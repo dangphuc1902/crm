@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -32,4 +34,7 @@ public class UsersEntity {
     @ManyToOne      // TODO note: Dựa vào "ManyToOne" hay "OneToMany" Xem chữ sau cùng để chọn một đối tượng private hay một List đối tượng.
     @JoinColumn(name = "role_id")       // TODO note: Tên cột trong dâatabase dùng để liên kết dữ liệu
     private RolesEntity rolesEntity;    // TODO note: Dựa vào "ManyToOne" hay "OneToMany" Xem chữ sau cùng để chọn một đối tượng private hay một List đối tượng.
+
+    @OneToMany(mappedBy = "usersEntity")
+    private List<TasksEntity> tasks;
 }

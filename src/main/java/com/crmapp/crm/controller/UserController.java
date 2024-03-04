@@ -42,7 +42,10 @@ public class UserController {
 
 
     @GetMapping("/add")
-    public String userAdd(Model model){
+    public String userAdd(Model model, HttpSession session){
+        UsersEntity users = userService.getUserBySession(session);
+        String avatarPath = userService.getPathAvata(users);
+        model.addAttribute("avatarPath",avatarPath);
         List<RolesEntity> listRole = roleService.getAllRole();
         model.addAttribute("listRole",listRole);
         return"user-add";
@@ -77,14 +80,20 @@ public class UserController {
     }
 //  Show table user
     @GetMapping("/table")
-    public String userTable(Model model){
+    public String userTable(Model model ,HttpSession session){
+        UsersEntity users = userService.getUserBySession(session);
+        String avatarPath = userService.getPathAvata(users);
+        model.addAttribute("avatarPath",avatarPath);
         List<UsersEntity> listUser = userService.getAllUser();
         model.addAttribute("listUser",listUser);
         return "user-table";
     }
 // Update user after edit
     @GetMapping("/update/{user_id}")
-    public String update(@PathVariable(name = "user_id") int id, Model model){
+    public String update(@PathVariable(name = "user_id") int id, Model model, HttpSession session){
+        UsersEntity users = userService.getUserBySession(session);
+        String avatarPath = userService.getPathAvata(users);
+        model.addAttribute("avatarPath",avatarPath);
         UsersEntity usersEntity = userService.getUserId(id);
         model.addAttribute("usersEntity",usersEntity);
         List<RolesEntity> listRole = roleService.getAllRole();
@@ -98,9 +107,10 @@ public class UserController {
                                 @RequestParam String password,
                                 @RequestParam String phoneNumber,
                                 @RequestParam("selectedRoleId") int roleId,
-                                Model model){
+                                Model model,
+                                @RequestParam("fileImage") MultipartFile file){
         RolesEntity rolesEntity = roleService.getRoleId(roleId);
-        boolean insertUser = userService.processUpdate(fullname, email, password,user_id, phoneNumber, rolesEntity);
+        boolean insertUser = userService.processUpdate(fullname, email, password,user_id, phoneNumber,file,rolesEntity);
         model.addAttribute("insertUser",insertUser);
         UsersEntity usersEntity = new UsersEntity();
         model.addAttribute("fullname",fullname);
@@ -112,9 +122,14 @@ public class UserController {
         return "redirect:/user/table";
     }
     @GetMapping("/details/{user_id}")
-    public String userDetails( @PathVariable("user_id") int id,  Model model){
+    public String userDetails( @PathVariable("user_id") int id,  Model model, HttpSession httpSession){
+        UsersEntity users = userService.getUserBySession(httpSession);
+        String avatarPath = userService.getPathAvata(users);
+        model.addAttribute("avatarPath",avatarPath);
         UsersEntity user = userService.getUserId(id);
         model.addAttribute("usersEntity", user);
+        String avatarPathid = userService.getPathAvata(user);
+        model.addAttribute("avatarPathid",avatarPathid);
         List<TasksEntity> tasksEntities = taskService.findByUsersEntity(user);
         List<TasksEntity> taskUnfulfilled = userService.checkTasksUnfulfilled(tasksEntities);
         model.addAttribute("unfulfilled", taskUnfulfilled);
@@ -136,13 +151,24 @@ public class UserController {
 
         return "user-details";
     }
+    @GetMapping("/logout")
+    public String logout(HttpServletRequest request) {
+
+        userService.deleteSession(request);
+        return "redirect:/login";
+    }
 //  Show user details.
     @GetMapping("/userdetails")
-    public String userDetails( Model model, HttpServletRequest request){
-        // Lấy lấy user từ sesion ở login
+    public String userDetails( Model model, HttpServletRequest request, HttpSession httpSession){
+        UsersEntity users = userService.getUserBySession(httpSession);
+        String avatarPath = userService.getPathAvata(users);
+        model.addAttribute("avatarPath",avatarPath);
         HttpSession session = request.getSession();
         UsersEntity user = userService.getUserBySession(session);
         model.addAttribute("usersEntity", user);
+        String avatarPathid = userService.getPathAvata(user);
+        model.addAttribute("avatarPathid",avatarPathid);
+
         List<TasksEntity> tasksEntities = taskService.findByUsersEntity(user);
         List<TasksEntity> taskUnfulfilled = userService.checkTasksUnfulfilled(tasksEntities);
         model.addAttribute("unfulfilled", taskUnfulfilled);

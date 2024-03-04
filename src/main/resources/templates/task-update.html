@@ -65,7 +65,7 @@
                     <li>
                         <div class="dropdown">
                             <a class="profile-pic dropdown-toggle" data-toggle="dropdown" href="#">
-                                <img src="plugins/images/users/varun.jpg" alt="user-img" width="36"
+                                <img th:src="${avatarPath}" alt="user-img" width="36"
                                     class="img-circle" />
                                 <b class="hidden-xs">Cybersoft</b>
                             </a>
@@ -73,7 +73,7 @@
                                 <li><a th:href="@{/profile/table}">Thông tin cá nhân</a></li>
                                 <li><a th:href="@{/user/userdetails}">Thống kê công việc</a></li>
                                 <li class="divider"></li>
-                                <li><a th:href="@{/login}">Đăng xuất</a></li>
+                                <li><a th:href="@{/user/logout}">Đăng xuất</a></li>
                             </ul>
                         </div>
                     </li>
@@ -133,12 +133,12 @@
                     <div class="col-md-2 col-12"></div>
                     <div class="col-md-8 col-xs-12">
                         <div class="white-box">
-                            <form class="form-horizontal form-material" th:action="@{/task/update/{task_id}(task_id=${tasksEntity.id})}" method="post" >
+                            <form class="form-horizontal form-material" th:action="@{/task/update/{task_id}(task_id=${TasksEntity.id})}" method="post" >
                                 <div class="form-group">
                                     <label class="col-md-12">Dự án</label>
                                     <div class="col-md-12">
                                         <select class="form-control form-control-line" name="job_id">
-                                            <option th:each="item : ${listJobs}" th:value="${item.id}" th:text="${item.name}" th:selected="${item.getId() == tasksEntity.getJobsEntity().getId()}"></option>
+                                            <option th:each="item : ${listJobs}" th:value="${item.id}" th:text="${item.name}" th:selected="${item.getId() == TasksEntity.getJobsEntity().getId()}"></option>
                                         </select>
                                     </div>
                                 </div>
@@ -147,14 +147,14 @@
                                     <label class="col-md-12">Tên công việc</label>
                                     <div class="col-md-12">
                                         <input type="text" placeholder="Tên công việc"
-                                            class="form-control form-control-line" name="nameTask" th:value="${tasksEntity.getName()}">
+                                            class="form-control form-control-line" name="nameTask" th:value="${TasksEntity.getName()}">
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <label class="col-md-12">Miêu tả công việc</label>
                                     <div class="col-md-12">
                                         <input type="text" placeholder="Miêu tả công việc"
-                                               class="form-control form-control-line" name="description" th:value="${tasksEntity.getDescription()}">
+                                               class="form-control form-control-line" name="description" th:value="${TasksEntity.getDescription()}">
                                     </div>
                                 </div>
                                 <div class="form-group">
@@ -162,7 +162,7 @@
                                     <div class="col-md-12">
                                         <div class="col-md-12">
                                             <select class="form-control form-control-line" name="user_id">
-                                                <option th:each="item : ${listUser}" th:value="${item.id}" th:text="${item.fullname}" th:selected="${item.getId() == tasksEntity.getUsersEntity().getId()}"></option>
+                                                <option th:each="item : ${listUser}" th:value="${item.id}" th:text="${item.fullname}" th:selected="${item.getId() == TasksEntity.getUsersEntity().getId()}"></option>
                                             </select>
                                         </div>
                                     </div>
@@ -171,7 +171,7 @@
                                     <label class="col-md-12">Ngày bắt đầu</label>
                                     <div class="col-md-12">
                                         <input type="text" placeholder="dd/MM/yyyy"
-                                            class="form-control form-control-line" name="startDate" th:value="${#dates.format(tasksEntity.getStartDate(), 'dd-MM-yyyy')}">
+                                            class="form-control form-control-line" name="startDate" th:value="${#dates.format(TasksEntity.getStartDate(), 'dd-MM-yyyy')}">
                                         <h3 style="color: red;text-align: center" th:if="${checkConditionsDate == false}" >Thời gian này đã nằm ngoài thời gian cho phép làm Dự án !</h3>
                                     </div>
                                 </div>
@@ -179,14 +179,14 @@
                                     <label class="col-md-12">Ngày kết thúc</label>
                                     <div class="col-md-12">
                                         <input type="text" placeholder="dd/MM/yyyy"
-                                            class="form-control form-control-line" name="endDate" th:value="${#dates.format(tasksEntity.getEndDate(), 'dd-MM-yyyy')}">
+                                            class="form-control form-control-line" name="endDate" th:value="${#dates.format(TasksEntity.getEndDate(), 'dd-MM-yyyy')}">
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <label class="col-md-12">Tình trạng thực hiện</label>
                                     <div class="col-md-12">
                                         <select class="form-control form-control-line" name="status_id">
-                                            <option th:each="item : ${statusEntitie}" th:value="${item.id}" th:text="${item.getName()}" th:selected="${item.getId() == tasksEntity.getStatusEntity().getId()}"></option>
+                                            <option th:each="item : ${statusEntitie}" th:value="${item.id}" th:text="${item.getName()}" th:selected="${item.getId() == TasksEntity.getStatusEntity().getId()}"></option>
                                         </select>
                                     </div>
                                 </div>

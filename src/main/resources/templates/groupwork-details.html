@@ -75,14 +75,14 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 <li>
                     <div class="dropdown">
                         <a class="profile-pic dropdown-toggle" data-toggle="dropdown" href="#">
-                            <img src="plugins/images/users/varun.jpg" alt="user-img" width="36" class="img-circle"/>
+                            <img th:src="${avatarPath}" alt="user-img" width="36" class="img-circle" />
                             <b class="hidden-xs">Cybersoft</b>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a href="profile.html">Thông tin cá nhân</a></li>
-                            <li><a th:href="@{/user/userdetails}">Thống kê công việc</a></li>
+                            <li><a th:href="@{/user/profile}">Thông tin cá nhân</a></li>
+                            <li><a th:href="@{/user/detail}">Thống kê công việc</a></li>
                             <li class="divider"></li>
-                            <li><a th:href="@{/login}">Đăng xuất</a></li>
+                            <li><a th:href="@{/user/logout}">Đăng xuất</a></li>
                         </ul>
                     </div>
                 </li>
@@ -95,7 +95,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <!-- Left navbar-header -->
     <div class="navbar-default sidebar" role="navigation">
         <div class="sidebar-nav navbar-collapse slimscrollsidebar">
-            <ul class="nav" id="side-menu">
+            <ul class="nav" id="side-menu">R
                 <li style="padding: 10px 0 0;">
                     <a href="./dashboard" class="waves-effect"><i class="fa fa-clock-o fa-fw"
                                                                   aria-hidden="true"></i><span class="hide-menu">Dashboard</span></a>
@@ -114,7 +114,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 </li>
                 <li>
                     <a href="./task/table" class="waves-effect"><i class="fa fa-table fa-fw"
-                                                             aria-hidden="true"></i><span class="hide-menu">Công việc</span></a>
+                                                                   aria-hidden="true"></i><span class="hide-menu">Công việc</span></a>
                 </li>
                 <li>
                     <a href="./blank" class="waves-effect"><i class="fa fa-columns fa-fw"
@@ -154,12 +154,12 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                 <h5 class="text-muted vb">CHƯA BẮT ĐẦU</h5>
                             </div>
                             <div class="col-md-6 col-sm-6 col-xs-6">
-                                <h3 class="counter text-right m-t-15 text-danger">20%</h3>
+                                <h3 class="counter text-right m-t-15 text-danger" th:text="${quantityUnfulfilled + '%'}"></h3>
                             </div>
                             <div class="col-md-12 col-sm-12 col-xs-12">
                                 <div class="progress">
                                     <div class="progress-bar progress-bar-danger" role="progressbar"
-                                         aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 20%">
+                                         aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" th:style="'width: ' + ${quantityUnfulfilled} + '%'">
                                     </div>
                                 </div>
                             </div>
@@ -176,12 +176,12 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                 <h5 class="text-muted vb">ĐANG THỰC HIỆN</h5>
                             </div>
                             <div class="col-md-6 col-sm-6 col-xs-6">
-                                <h3 class="counter text-right m-t-15 text-megna">50%</h3>
+                                <h3 class="counter text-right m-t-15 text-megna" th:text="${quantityProcessing + '%'}"></h3>
                             </div>
                             <div class="col-md-12 col-sm-12 col-xs-12">
                                 <div class="progress">
                                     <div class="progress-bar progress-bar-megna" role="progressbar"
-                                         aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 50%">
+                                         aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" th:style="'width: ' + ${quantityProcessing} + '%'">
                                     </div>
                                 </div>
                             </div>
@@ -198,12 +198,12 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                 <h5 class="text-muted vb">HOÀN THÀNH</h5>
                             </div>
                             <div class="col-md-6 col-sm-6 col-xs-6">
-                                <h3 class="counter text-right m-t-15 text-primary">30%</h3>
+                                <h3 class="counter text-right m-t-15 text-primary" th:text="${quantityCompleted + '%'}"></h3>
                             </div>
                             <div class="col-md-12 col-sm-12 col-xs-12">
                                 <div class="progress">
                                     <div class="progress-bar progress-bar-primary" role="progressbar"
-                                         aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 30%">
+                                         aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" th:style="'width: ' + ${quantityCompleted} + '%'">
                                     </div>
                                 </div>
                             </div>
@@ -215,6 +215,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
             <!-- END THỐNG KÊ -->
 
             <!-- BEGIN DANH SÁCH CÔNG VIỆC -->
+            <h4>DANH SÁCH CÔNG VIỆC</h4>
             <div class="row" th:each="user : ${listUsers}">
                 <div class="col-xs-12">
                     <a href="#" class="group-title">
@@ -226,18 +227,17 @@ scratch. This page gets rid of all links and provides the needed markup only.
                     <div class="white-box">
                         <h3 class="box-title">Chưa thực hiện</h3>
                         <div class="message-center">
-                            <a href="#">
-                                <div class="mail-contnet">
-                                    <tr th:each="unfulfilled : ${user.tasks}">
-                                        <td th:if="${unfulfilled.getStatusEntity().name == 'Chưa thực hiện'}">
+                            <tr th:each="unfulfilled : ${user.tasks}">
+                                <td th:if="${unfulfilled.getStatusEntity().name == 'Chưa thực hiện'}">
+                                    <a th:href="@{/task/show}">
+                                        <div class="mail-contnet">
                                             <h5 th:text="${unfulfilled.name}"></h5>
-                                            <span class="mail-desc">Just see the my admin!</span> <span
-                                                class="time">9:30 AM</span>
-                                        </td>
-                                    </tr>
-
-                                </div>
-                            </a>
+                                            <span class="mail-desc" th:text="${unfulfilled.description}"></span>
+                                            <span class="time" th:text="${currentTime}"></span>
+                                        </div>
+                                    </a>
+                                </td>
+                            </tr>
                         </div>
                     </div>
                 </div>
@@ -245,18 +245,17 @@ scratch. This page gets rid of all links and provides the needed markup only.
                     <div class="white-box">
                         <h3 class="box-title">Đang thực hiện</h3>
                         <div class="message-center">
-                            <a href="#">
-                                <div class="mail-contnet">
-                                    <tr th:each="Processing : ${user.tasks}">
-                                        <td th:if="${Processing.getStatusEntity().name == 'Đang thực hiện'}">
+                            <tr th:each="Processing : ${user.tasks}">
+                                <td th:if="${Processing.getStatusEntity().name == 'Đang thực hiện'}">
+                                    <a th:href="@{/task/show}">
+                                        <div class="mail-contnet">
                                             <h5 th:text="${Processing.name}"></h5>
-                                            <span class="mail-desc">Just see the my admin!</span>
-                                            <span class="time">9:30 AM</span>
-                                        </td>
-                                    </tr>
-
-                                </div>
-                            </a>
+                                            <span class="mail-desc" th:text="${Processing.description}"></span>
+                                            <span class="time" th:text="${currentTime}"></span>
+                                        </div>
+                                    </a>
+                                </td>
+                            </tr>
                         </div>
                     </div>
                 </div>
@@ -264,173 +263,41 @@ scratch. This page gets rid of all links and provides the needed markup only.
                     <div class="white-box">
                         <h3 class="box-title">Đã hoàn thành</h3>
                         <div class="message-center">
-                            <a href="#">
-                                <div class="mail-contnet">
-                                    <tr th:each="made : ${user.tasks}">
-                                        <td th:if="${made.getStatusEntity().name == 'Đã hoàn thành'}">
+                            <tr th:each="made : ${user.tasks}">
+                                <td th:if="${made.getStatusEntity().name == 'Đã hoàn thành'}">
+                                    <a th:href="@{/task/show}">
+                                        <div class="mail-contnet">
                                             <h5 th:text="${made.name}"></h5>
-                                            <span class="mail-desc">Just see the my admin!</span> <span
-                                                class="time">9:30 AM</span>
-                                        </td>
-                                    </tr>
-
-                                </div>
-                            </a>
+                                            <span class="mail-desc" th:text="${made.description}"></span>
+                                            <span class="time" th:text="${currentTime}"> </span>
+                                        </div>
+                                    </a>
+                                </td>
+                            </tr>
                         </div>
                     </div>
                 </div>
+                                </div>
+                <!-- END DANH SÁCH CÔNG VIỆC -->
             </div>
-            <!-- BEGIN DANH SÁCH CÔNG VIỆC -->
-            <div class="row">
-                <div class="col-xs-12">
-                    <a href="#" class="group-title">
-                        <img width="30" src="plugins/images/users/pawandeep.jpg" class="img-circle" />
-                        <span>Pavan kumar</span>
-                    </a>
-                </div>
-                <div class="col-md-4">
-                    <div class="white-box">
-                        <h3 class="box-title">Chưa thực hiện</h3>
-                        <div class="message-center">
-                            <a href="#">
-                                <div class="mail-contnet">
-                                    <h5>Pavan kumar</h5> <span class="mail-desc">Just see the my admin!</span> <span
-                                        class="time">9:30 AM</span>
-                                </div>
-                            </a>
-                            <a href="#">
-                                <div class="mail-contnet">
-                                    <h5>Sonu Nigam</h5> <span class="mail-desc">I've sung a song! See you at</span>
-                                    <span class="time">9:10 AM</span>
-                                </div>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="white-box">
-                        <h3 class="box-title">Đang thực hiện</h3>
-                        <div class="message-center">
-                            <a href="#">
-                                <div class="mail-contnet">
-                                    <h5>Pavan kumar</h5> <span class="mail-desc">Just see the my admin!</span> <span
-                                        class="time">9:30 AM</span>
-                                </div>
-                            </a>
-                            <a href="#">
-                                <div class="mail-contnet">
-                                    <h5>Sonu Nigam</h5> <span class="mail-desc">I've sung a song! See you at</span>
-                                    <span class="time">9:10 AM</span>
-                                </div>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="white-box">
-                        <h3 class="box-title">Đã hoàn thành</h3>
-                        <div class="message-center">
-                            <a href="#">
-                                <div class="mail-contnet">
-                                    <h5>Pavan kumar</h5> <span class="mail-desc">Just see the my admin!</span> <span
-                                        class="time">9:30 AM</span>
-                                </div>
-                            </a>
-                            <a href="#">
-                                <div class="mail-contnet">
-                                    <h5>Sonu Nigam</h5> <span class="mail-desc">I've sung a song! See you at</span>
-                                    <span class="time">9:10 AM</span>
-                                </div>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-xs-12">
-                    <a href="#" class="group-title">
-                        <img width="30" src="plugins/images/users/pawandeep.jpg" class="img-circle" />
-                        <span>Pavan kumar</span>
-                    </a>
-                </div>
-                <div class="col-md-4">
-                    <div class="white-box">
-                        <h3 class="box-title">Chưa thực hiện</h3>
-                        <div class="message-center">
-                            <a href="#">
-                                <div class="mail-contnet">
-                                    <h5>Pavan kumar</h5> <span class="mail-desc">Just see the my admin!</span> <span
-                                        class="time">9:30 AM</span>
-                                </div>
-                            </a>
-                            <a href="#">
-                                <div class="mail-contnet">
-                                    <h5>Sonu Nigam</h5> <span class="mail-desc">I've sung a song! See you at</span>
-                                    <span class="time">9:10 AM</span>
-                                </div>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="white-box">
-                        <h3 class="box-title">Đang thực hiện</h3>
-                        <div class="message-center">
-                            <a href="#">
-                                <div class="mail-contnet">
-                                    <h5>Pavan kumar</h5> <span class="mail-desc">Just see the my admin!</span> <span
-                                        class="time">9:30 AM</span>
-                                </div>
-                            </a>
-                            <a href="#">
-                                <div class="mail-contnet">
-                                    <h5>Sonu Nigam</h5> <span class="mail-desc">I've sung a song! See you at</span>
-                                    <span class="time">9:10 AM</span>
-                                </div>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="white-box">
-                        <h3 class="box-title">Đã hoàn thành</h3>
-                        <div class="message-center">
-                            <a href="#">
-                                <div class="mail-contnet">
-                                    <h5>Pavan kumar</h5> <span class="mail-desc">Just see the my admin!</span> <span
-                                        class="time">9:30 AM</span>
-                                </div>
-                            </a>
-                            <a href="#">
-                                <div class="mail-contnet">
-                                    <h5>Sonu Nigam</h5> <span class="mail-desc">I've sung a song! See you at</span>
-                                    <span class="time">9:10 AM</span>
-                                </div>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- END DANH SÁCH CÔNG VIỆC -->
+            <!-- /.container-fluid -->
+            <footer class="footer text-center"> 2018 &copy; myclass.com</footer>
         </div>
-        <!-- /.container-fluid -->
-        <footer class="footer text-center"> 2018 &copy; myclass.com</footer>
+        <!-- /#page-wrapper -->
     </div>
-    <!-- /#page-wrapper -->
-</div>
-<!-- /#wrapper -->
-<!-- jQuery -->
-<script src="plugins/bower_components/jquery/dist/jquery.min.js"></script>
-<!-- Bootstrap Core JavaScript -->
-<script src="bootstrap/dist/js/bootstrap.min.js"></script>
-<!-- Menu Plugin JavaScript -->
-<script src="plugins/bower_components/sidebar-nav/dist/sidebar-nav.min.js"></script>
-<!--slimscroll JavaScript -->
-<script src="js/jquery.slimscroll.js"></script>
-<!--Wave Effects -->
-<script src="js/waves.js"></script>
-<!-- Custom Theme JavaScript -->
-<script src="js/custom.min.js"></script>
+    <!-- /#wrapper -->
+    <!-- jQuery -->
+    <script src="plugins/bower_components/jquery/dist/jquery.min.js"></script>
+    <!-- Bootstrap Core JavaScript -->
+    <script src="bootstrap/dist/js/bootstrap.min.js"></script>
+    <!-- Menu Plugin JavaScript -->
+    <script src="plugins/bower_components/sidebar-nav/dist/sidebar-nav.min.js"></script>
+    <!--slimscroll JavaScript -->
+    <script src="js/jquery.slimscroll.js"></script>
+    <!--Wave Effects -->
+    <script src="js/waves.js"></script>
+    <!-- Custom Theme JavaScript -->
+    <script src="js/custom.min.js"></script>
 </body>
 
 </html>

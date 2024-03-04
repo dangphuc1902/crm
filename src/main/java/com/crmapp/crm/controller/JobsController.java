@@ -1,7 +1,11 @@
 package com.crmapp.crm.controller;
 
 import com.crmapp.crm.entity.JobsEntity;
+import com.crmapp.crm.entity.TasksEntity;
+import com.crmapp.crm.entity.UsersEntity;
 import com.crmapp.crm.service.JobsService;
+import com.crmapp.crm.service.UserService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
@@ -18,16 +22,26 @@ public class JobsController {
     @Autowired
     private JobsService jobsService;
 
+    @Autowired
+    private UserService userService;
+
+
 //    Display show table Jobs
     @GetMapping("/table")
-    public String JobsTable(Model model){
-        List<JobsEntity> jobsEntity = jobsService.getAlljob();
+    public String JobsTable(Model model,  HttpSession session){
+        UsersEntity users = userService.getUserBySession(session);
+        String avatarPath = userService.getPathAvata(users);
+        model.addAttribute("avatarPath",avatarPath);
+        List<JobsEntity> jobsEntity = jobsService.getJobByRole(session);
         model.addAttribute("jobs",jobsEntity);
         return "groupwork";
     }
     //    Display add work
     @GetMapping("/add")
-    public String addWork(Model model){
+    public String addWork(Model model,  HttpSession httpSession){
+        UsersEntity users = userService.getUserBySession(httpSession);
+        String avatarPath = userService.getPathAvata(users);
+        model.addAttribute("avatarPath",avatarPath);
         return "groupwork-add";
     }
 
@@ -45,7 +59,10 @@ public class JobsController {
         return "groupwork-add";
     }
     @GetMapping("/update/{job_id}")
-    public String getUpdateWork(@PathVariable(name = "job_id") int id, Model model){
+    public String getUpdateWork(@PathVariable(name = "job_id") int id, Model model,  HttpSession httpSession){
+        UsersEntity users = userService.getUserBySession(httpSession);
+        String avatarPath = userService.getPathAvata(users);
+        model.addAttribute("avatarPath",avatarPath);
         JobsEntity jobsEntity = jobsService.getJobById(id);
         model.addAttribute("jobsEntity", jobsEntity);
         return "groupwork-update";
@@ -76,9 +93,29 @@ public class JobsController {
 //    Display details
 
     @GetMapping("/details/{job_id}")
-    public String processDeltails(@PathVariable(name = "job_id") int id, Model model){
-        List<JobsEntity> listJobs = jobsService.getAlljob();
-        model.addAttribute("listJobs",listJobs);
+    public String showJobs(@PathVariable(name = "job_id") int id, Model model, HttpSession session){
+        UsersEntity users = userService.getUserBySession(session);
+        String avatarPath = userService.getPathAvata(users);
+        model.addAttribute("avatarPath",avatarPath);
+        JobsEntity job = jobsService.getJobById(id);
+
+        List<TasksEntity> listTask = job.getTasks();
+
+        List<UsersEntity> listUser = jobsService.getUserByTask(listTask);
+        model.addAttribute("listUsers", listUser);
+
+        int quantityUnfulfilled = jobsService.getTaskUnfulfilled(job);
+        model.addAttribute("quantityUnfulfilled", quantityUnfulfilled);
+
+        int quantityProcessing = jobsService.getTaskProcessing(job);
+        model.addAttribute("quantityProcessing", quantityProcessing);
+
+        int quantityCompleted = jobsService.getTaskCompleted(job);
+        model.addAttribute("quantityCompleted", quantityCompleted);
+
+        String currentTime = jobsService.getCurrentTime();
+        model.addAttribute("currentTime", currentTime);
+
         return "groupwork-details";
     }
 }

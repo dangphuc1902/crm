@@ -19,7 +19,7 @@ public class CustomFilter implements Filter {
         HttpSession session = request.getSession();     //Session tạo cookie là idsession.=> Lấy IDsesstion ở client. Yêu client dùng gửi lên server
         String path = request.getServletPath();
         if (session != null && session.getAttribute("email") != null && !session.getAttribute("email").equals("")) {
-            response.sendRedirect("http://localhost:8080");
+            response.sendRedirect("http://localhost:8080/dashboard");
         }else {
             chain.doFilter(servletRequest,servletResponse);
         }
